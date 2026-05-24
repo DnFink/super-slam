@@ -1149,13 +1149,85 @@ function drawPowerupKey(ctx, x, y, w, h) {
     const bob = Math.sin(Date.now() / 200) * 3;
     ctx.translate(0, bob);
     
-    const spin = Date.now() / 350;
-    ctx.scale(Math.sin(spin), 1);
+    // Blinking effect
+    const isBlink = Math.floor(Date.now() / 150) % 2 === 0;
+    const fillColor = isBlink ? "#ffffff" : "#ffecb3"; // Blink between white and egg-yellow
+    const strokeColor = "#ffb300";
     
-    // Glowing golden winding key
-    drawSketchRect(ctx, -2, -6, 4, 14, "#ff8f00", "#ffd54f", 2, 0.8);
-    drawSketchCircle(ctx, -6, -9, 6, "#ff8f00", "#ffd54f", 2, 0.8);
-    drawSketchCircle(ctx, 6, -9, 6, "#ff8f00", "#ffd54f", 2, 0.8);
+    // Scale vertically to make an egg shape
+    ctx.scale(1, 1.3);
+    
+    // Draw the egg
+    drawSketchCircle(ctx, 0, 0, 8, strokeColor, fillColor, 2, 0.8);
+    
+    // Add a few speckles/spots for egg texture
+    ctx.fillStyle = "#ffb300";
+    ctx.beginPath();
+    ctx.arc(-3, -2, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(2, 3, 1, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(4, -1, 1.2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.restore();
+}
+
+
+function drawHorse(ctx, x, y, w, h, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    
+    drawSketchRect(ctx, -15, 5, 30, 15, "#5d4037", "#795548", 2, 0.5); // Body
+    drawSketchRect(ctx, 10, -5, 12, 15, "#5d4037", "#795548", 2, 0.5); // Neck
+    drawSketchRect(ctx, -15, 20, 4, 10, "#3e2723", "#4e342e", 2, 0.5); // Back leg
+    drawSketchRect(ctx, 10, 20, 4, 10, "#3e2723", "#4e342e", 2, 0.5); // Front leg
+    drawSketchCircle(ctx, 18, -2, 2, "#000", "#000", 1, 0); // Eye
+    
+    ctx.restore();
+}
+
+function drawRacecar(ctx, x, y, w, h, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    
+    drawSketchRect(ctx, -20, 5, 40, 15, "#b71c1c", "#f44336", 2, 0.5); // Car body
+    drawSketchCircle(ctx, -12, 20, 6, "#000", "#424242", 2, 0.5); // Back wheel
+    drawSketchCircle(ctx, 12, 20, 6, "#000", "#424242", 2, 0.5); // Front wheel
+    drawSketchRect(ctx, 5, 0, 10, 8, "#fff", "#e0e0e0", 2, 0.5); // Windshield
+    
+    ctx.restore();
+}
+
+function drawJetpack(ctx, x, y, w, h, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    
+    drawSketchRect(ctx, -15, -5, 8, 20, "#455a64", "#607d8b", 2, 0.5);
+    const fireBob = Math.random() * 5;
+    drawSketchRect(ctx, -13, 15, 4, 10 + fireBob, "#ff5722", "#ffeb3b", 1, 1.0);
+    
+    ctx.restore();
+}
+
+function drawCape(ctx, x, y, w, h, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    
+    const flutter = Math.sin(Date.now() / 100) * 5;
+    drawSketchBezier(ctx, -8, -10, -25, -5 + flutter, -20, 10 + flutter, -8, 10, "#b71c1c", 2, 1.0);
+    ctx.fillStyle = "#f44336";
+    ctx.beginPath();
+    ctx.moveTo(-8, -10);
+    ctx.quadraticCurveTo(-25, -5 + flutter, -20, 10 + flutter);
+    ctx.lineTo(-8, 10);
+    ctx.fill();
     
     ctx.restore();
 }

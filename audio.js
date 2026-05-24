@@ -8,28 +8,63 @@ const AudioEngine = {
     isMusicMuted: false,
     musicInterval: null,
     musicStep: 0,
-    bpm: 110,
-    
-    // Simple 8-bit retro theme sheet music!
-    // Bass note sequences (square wave, deep)
-    bassline: [
-        'C3', 'G3', 'C3', 'G3', 'F3', 'C4', 'F3', 'C4',
-        'G3', 'D4', 'G3', 'D4', 'C3', 'G3', 'C3', 'C4',
-        'C3', 'G3', 'C3', 'G3', 'F3', 'C4', 'F3', 'C4',
-        'G3', 'D4', 'G3', 'B3', 'C4', 'G4', 'C4', 'R'
-    ],
-    // Cheerful high-pitched chiptune lead melody
-    melody: [
-        'E5', 'G5', 'C6', 'R',  'A5', 'R',  'F5', 'R',
-        'D5', 'F5', 'B5', 'R',  'G5', 'R',  'E5', 'R',
-        'E5', 'G5', 'C6', 'R',  'A5', 'R',  'C6', 'R',
-        'B5', 'R',  'A5', 'R',  'G5', 'F5', 'E5', 'D5'
+    themes: [
+        // Theme 0: Fallback / Default
+        {
+            bpm: 110,
+            bassline: ['C3', 'G3', 'C3', 'G3', 'F3', 'C4', 'F3', 'C4', 'G3', 'D4', 'G3', 'D4', 'C3', 'G3', 'C3', 'C4', 'C3', 'G3', 'C3', 'G3', 'F3', 'C4', 'F3', 'C4', 'G3', 'D4', 'G3', 'B3', 'C4', 'G4', 'C4', 'R'],
+            melody: ['E5', 'G5', 'C6', 'R',  'A5', 'R',  'F5', 'R', 'D5', 'F5', 'B5', 'R',  'G5', 'R',  'E5', 'R', 'E5', 'G5', 'C6', 'R',  'A5', 'R',  'C6', 'R', 'B5', 'R',  'A5', 'R',  'G5', 'F5', 'E5', 'D5'],
+            bassOsc: 'square',
+            melOsc: 'triangle'
+        },
+        // Theme 1: Level 1
+        {
+            bpm: 110,
+            bassline: ['C3', 'G3', 'C3', 'G3', 'F3', 'C4', 'F3', 'C4', 'G3', 'D4', 'G3', 'D4', 'C3', 'G3', 'C3', 'C4', 'C3', 'G3', 'C3', 'G3', 'F3', 'C4', 'F3', 'C4', 'G3', 'D4', 'G3', 'B3', 'C4', 'G4', 'C4', 'R'],
+            melody: ['E5', 'G5', 'C6', 'R',  'A5', 'R',  'F5', 'R', 'D5', 'F5', 'B5', 'R',  'G5', 'R',  'E5', 'R', 'E5', 'G5', 'C6', 'R',  'A5', 'R',  'C6', 'R', 'B5', 'R',  'A5', 'R',  'G5', 'F5', 'E5', 'D5'],
+            bassOsc: 'square',
+            melOsc: 'triangle'
+        },
+        // Theme 2: Level 2 (Underground)
+        {
+            bpm: 135,
+            bassline: ['C3', 'C3', 'D#3', 'D#3', 'F3', 'F3', 'F#3', 'F#3', 'G3', 'G3', 'C4', 'C4', 'B3', 'B3', 'G3', 'G3', 'C3', 'C3', 'D#3', 'D#3', 'F3', 'F3', 'F#3', 'F#3', 'G3', 'G3', 'F3', 'F3', 'D#3', 'D#3', 'C3', 'C3'],
+            melody: ['C5', 'R', 'D#5', 'R', 'F5', 'R', 'F#5', 'R', 'G5', 'R', 'C6', 'R', 'B5', 'R', 'G5', 'R', 'C5', 'R', 'D#5', 'R', 'F5', 'R', 'F#5', 'R', 'G5', 'R', 'F5', 'R', 'D#5', 'R', 'C5', 'R'],
+            bassOsc: 'sawtooth',
+            melOsc: 'square'
+        },
+        // Theme 3: Level 3 (Sky)
+        {
+            bpm: 125,
+            bassline: ['F3', 'F3', 'A3', 'C4', 'G3', 'G3', 'B3', 'D4', 'C3', 'C3', 'E3', 'G3', 'C4', 'C4', 'G3', 'E3', 'F3', 'F3', 'A3', 'C4', 'G3', 'G3', 'B3', 'D4', 'C4', 'G3', 'E3', 'C3', 'R', 'R', 'R', 'R'],
+            melody: ['A5', 'R', 'C6', 'R', 'B5', 'R', 'D6', 'R', 'C6', 'R', 'E6', 'R', 'G6', 'R', 'E6', 'R', 'A5', 'R', 'C6', 'R', 'B5', 'R', 'D6', 'R', 'C6', 'R', 'G5', 'R', 'E5', 'R', 'C5', 'R'],
+            bassOsc: 'square',
+            melOsc: 'sine'
+        },
+        // Theme 4: Custom Level
+        {
+            bpm: 140,
+            bassline: ['E3', 'E3', 'E3', 'E3', 'G3', 'G3', 'A3', 'A3', 'E3', 'E3', 'E3', 'E3', 'D3', 'D3', 'C3', 'D3', 'E3', 'E3', 'E3', 'E3', 'G3', 'G3', 'A3', 'A3', 'C4', 'C4', 'B3', 'B3', 'G3', 'G3', 'E3', 'R'],
+            melody: ['E5', 'B5', 'E6', 'R', 'D6', 'R', 'B5', 'R', 'E5', 'B5', 'E6', 'R', 'D6', 'R', 'B5', 'R', 'E5', 'B5', 'E6', 'R', 'D6', 'R', 'B5', 'R', 'G5', 'R', 'F#5', 'R', 'D5', 'R', 'E5', 'R'],
+            bassOsc: 'sawtooth',
+            melOsc: 'sawtooth'
+        }
     ],
 
+    currentTheme: 1,
+
+    setTheme(lvl) {
+        if (lvl === 'custom') {
+            this.currentTheme = 4;
+        } else {
+            this.currentTheme = lvl > 0 && lvl <= 3 ? lvl : 1;
+        }
+    },
+
     frequencies: {
-        'C3': 130.81, 'D3': 146.83, 'E3': 164.81, 'F3': 174.61, 'G3': 196.00, 'A3': 220.00, 'B3': 246.94,
+        'C3': 130.81, 'D3': 146.83, 'D#3': 155.56, 'E3': 164.81, 'F3': 174.61, 'F#3': 185.00, 'G3': 196.00, 'A3': 220.00, 'B3': 246.94,
         'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23, 'G4': 392.00, 'A4': 440.00, 'B4': 493.88,
-        'C5': 523.25, 'D5': 587.33, 'E5': 659.25, 'F5': 698.46, 'G5': 783.99, 'A5': 880.00, 'B5': 987.77,
+        'C5': 523.25, 'D5': 587.33, 'D#5': 622.25, 'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'G5': 783.99, 'A5': 880.00, 'B5': 987.77,
         'C6': 1046.50, 'D6': 1174.66, 'E6': 1318.51, 'F6': 1396.91, 'G6': 1567.98, 'R': 0
     },
 
@@ -230,7 +265,8 @@ const AudioEngine = {
         this.init();
         if (this.musicInterval) return;
         
-        const stepTime = 60 / this.bpm / 2; // eighth notes
+        const theme = this.themes[this.currentTheme];
+        const stepTime = 60 / theme.bpm / 2; // eighth notes
         
         this.musicInterval = setInterval(() => {
             if (this.isMusicMuted) return;
@@ -238,12 +274,12 @@ const AudioEngine = {
             const now = this.ctx.currentTime;
             const idx = this.musicStep % 32;
             
-            // 1. Play Bass Note (deep square wave)
-            const bassNote = this.bassline[idx];
+            // 1. Play Bass Note
+            const bassNote = theme.bassline[idx];
             if (bassNote !== 'R' && this.frequencies[bassNote]) {
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
-                osc.type = 'square';
+                osc.type = theme.bassOsc;
                 osc.frequency.setValueAtTime(this.frequencies[bassNote], now);
                 
                 gain.gain.setValueAtTime(0.03, now);
@@ -255,12 +291,12 @@ const AudioEngine = {
                 osc.stop(now + stepTime * 0.9);
             }
             
-            // 2. Play Lead Melody Note (triangle wave, sweet & soft)
-            const melNote = this.melody[idx];
+            // 2. Play Lead Melody Note
+            const melNote = theme.melody[idx];
             if (melNote !== 'R' && this.frequencies[melNote]) {
                 const oscMel = this.ctx.createOscillator();
                 const gainMel = this.ctx.createGain();
-                oscMel.type = 'triangle';
+                oscMel.type = theme.melOsc;
                 oscMel.frequency.setValueAtTime(this.frequencies[melNote], now);
                 
                 gainMel.gain.setValueAtTime(0.035, now);
