@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Super Owen - Hand-Drawn Retro Platformer</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <!-- FontAwesome for beautiful icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- Floating Sketch Background Elements (Pencil Clouds/Stars for premium feel) -->
+        <div class="sky-elements">
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <div class="cloud cloud-3"></div>
+        </div>
+
+        <!-- 1. Main Menu Screen -->
+        <div id="main-menu-screen" class="menu-screen active">
+            <header class="game-header animate-bounce-gentle">
+                <h1 class="game-title">SUPER <span class="accent-text">OWEN</span></h1>
+                <p class="game-subtitle">A Hand-Drawn Platforming Adventure</p>
+            </header>
+
+            <div class="menu-card glass-panel">
+                <div class="character-preview-container">
+                    <canvas id="menu-char-canvas" width="120" height="120"></canvas>
+                    <p class="pulse-text">Choose Your Hero Below!</p>
+                </div>
+
+                <div class="menu-actions">
+                    <button id="btn-campaign" class="btn btn-primary btn-large">
+                        <i class="fa-solid fa-play"></i> Play Campaign
+                    </button>
+                    <button id="btn-level-editor" class="btn btn-secondary btn-large">
+                        <i class="fa-solid fa-pen-ruler"></i> Level Editor
+                    </button>
+                    <button id="btn-select-character" class="btn btn-tertiary">
+                        <i class="fa-solid fa-user-gear"></i> Select Character
+                    </button>
+                    <button id="btn-how-to-play" class="btn btn-info">
+                        <i class="fa-solid fa-circle-question"></i> How to Play
+                    </button>
+                </div>
+            </div>
+
+            <div class="audio-control-fixed">
+                <button id="btn-toggle-global-sound" class="btn btn-round" title="Toggle Sound">
+                    <i class="fa-solid fa-volume-up"></i>
+                </button>
+                <button id="btn-toggle-global-music" class="btn btn-round" title="Toggle Music">
+                    <i class="fa-solid fa-music"></i>
+                </button>
+            </div>
+
+            <footer class="main-footer">
+                <p>Inspired by hand-drawn sketches • Created with ♥</p>
+            </footer>
+        </div>
+
+        <!-- 2. Character Selection Screen -->
+        <div id="character-select-screen" class="menu-screen">
+            <button class="btn btn-back btn-round" data-target="main-menu-screen">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            
+            <h2 class="section-title">Select Your <span class="accent-text">Hero</span></h2>
+            
+            <div class="character-grid">
+                <!-- Character 1: Cowboy -->
+                <div class="char-card glass-panel" data-character="cowboy">
+                    <div class="char-card-canvas-wrapper">
+                        <canvas id="char-cowboy-canvas" width="140" height="140"></canvas>
+                    </div>
+                    <h3 class="char-name">Cowboy</h3>
+                    <p class="char-desc">The wild west hero! Sporting a red shirt and brown hat.</p>
+                    <span class="badge badge-primary">Base Form</span>
+                </div>
+
+                <!-- Character 2: Astronaut -->
+                <div class="char-card glass-panel" data-character="astronaut">
+                    <div class="char-card-canvas-wrapper">
+                        <canvas id="char-astronaut-canvas" width="140" height="140"></canvas>
+                    </div>
+                    <h3 class="char-name">Astronaut</h3>
+                    <p class="char-desc">Ready for space! Wearing a bulky spacesuit and bubble helmet.</p>
+                    <span class="badge badge-primary">Base Form</span>
+                </div>
+
+                <!-- Character 3: Driver -->
+                <div class="char-card active glass-panel" data-character="driver">
+                    <div class="char-card-canvas-wrapper">
+                        <canvas id="char-driver-canvas" width="140" height="140"></canvas>
+                    </div>
+                    <h3 class="char-name">Driver</h3>
+                    <p class="char-desc">Speed demon! Rocking a red racing suit and a white helmet.</p>
+                    <span class="badge badge-primary">Base Form</span>
+                </div>
+
+                <!-- Character 4: Princess -->
+                <div class="char-card glass-panel" data-character="princess">
+                    <div class="char-card-canvas-wrapper">
+                        <canvas id="char-princess-canvas" width="140" height="140"></canvas>
+                    </div>
+                    <h3 class="char-name">Princess</h3>
+                    <p class="char-desc">A magical fairy princess with a pink dress and a star wand!</p>
+                    <span class="badge badge-primary">Base Form</span>
+                </div>
+
+                <!-- Character 5: Ninja -->
+                <div class="char-card glass-panel" data-character="ninja">
+                    <div class="char-card-canvas-wrapper">
+                        <canvas id="char-ninja-canvas" width="140" height="140"></canvas>
+                    </div>
+                    <h3 class="char-name">Ninja</h3>
+                    <p class="char-desc">Swift and stealthy in a dark suit with a sharp katana.</p>
+                    <span class="badge badge-primary">Base Form</span>
+                </div>
+
+                <!-- Character 6: Fox -->
+                <div class="char-card glass-panel" data-character="fox">
+                    <div class="char-card-canvas-wrapper">
+                        <canvas id="char-fox-canvas" width="140" height="140"></canvas>
+                    </div>
+                    <h3 class="char-name">Fox</h3>
+                    <p class="char-desc">A clever orange fox with a big bushy tail and pointy ears.</p>
+                    <span class="badge badge-primary">Base Form</span>
+                </div>
+
+                <!-- Character 7: Gorilla -->
+                <div class="char-card glass-panel" data-character="gorilla">
+                    <div class="char-card-canvas-wrapper">
+                        <canvas id="char-gorilla-canvas" width="140" height="140"></canvas>
+                    </div>
+                    <h3 class="char-name">Gorilla</h3>
+                    <p class="char-desc">A powerful silverback gorilla with huge arms and a strong chest.</p>
+                    <span class="badge badge-primary">Base Form</span>
+                </div>
+            </div>
+            
+            <button id="btn-confirm-character" class="btn btn-primary btn-large">Select & Continue</button>
+        </div>
+
+        <!-- 3. Campaign Level Select Screen -->
+        <div id="level-select-screen" class="menu-screen">
+            <button class="btn btn-back btn-round" data-target="main-menu-screen">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <h2 class="section-title">Select <span class="accent-text">Level</span></h2>
+
+            <div class="levels-container">
+                <!-- Level 1 -->
+                <div class="level-card glass-panel" data-level="1">
+                    <div class="level-badge">Level 1</div>
+                    <div class="level-details">
+                        <h3 class="level-name">The Question Lands</h3>
+                        <p class="level-description">Traverse yellow question blocks, green pipes with snapping chomper plants, and lava pits.</p>
+                    </div>
+                    <button class="btn btn-start-level btn-primary">Play</button>
+                </div>
+
+                <!-- Level 2 -->
+                <div class="level-card glass-panel" data-level="2">
+                    <div class="level-badge">Level 2</div>
+                    <div class="level-details">
+                        <h3 class="level-name">Toxic Towers & Saws</h3>
+                        <p class="level-description">Avoid rising purple acid, dodge Bullet Bills, jump over spikes, and scale spinning saw spires!</p>
+                    </div>
+                    <button class="btn btn-start-level btn-primary">Play</button>
+                </div>
+
+                <!-- Level 3 -->
+                <div class="level-card glass-panel" data-level="3">
+                    <div class="level-badge">Level 3</div>
+                    <div class="level-details">
+                        <h3 class="level-name">The Boss Pyramid</h3>
+                        <p class="level-description">Cross the bridge over poison, climb the golden pyramid, defeat the Spear Boss, and escape on the lava ship!</p>
+                    </div>
+                    <button class="btn btn-start-level btn-primary">Play</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. How To Play Modal Screen -->
+        <div id="how-to-play-screen" class="menu-screen">
+            <button class="btn btn-back btn-round" data-target="main-menu-screen">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+
+            <h2 class="section-title">How To <span class="accent-text">Play</span></h2>
+
+            <div class="how-to-card glass-panel">
+                <div class="how-to-section">
+                    <h3><i class="fa-solid fa-keyboard"></i> Desktop Controls</h3>
+                    <ul class="controls-list">
+                        <li><span><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd></span> Walk Left & Right</li>
+                        <li><span><kbd>Space</kbd> / <kbd>W</kbd> / <kbd>↑</kbd> / <kbd>Z</kbd></span> Jump (Hold for higher jump)</li>
+                        <li><span><kbd>↓</kbd> / <kbd>S</kbd></span> Warp Down Tubes / Pipes</li>
+                        <li><span><kbd>Esc</kbd> / <kbd>P</kbd></span> Pause Game</li>
+                    </ul>
+                </div>
+
+                <div class="how-to-section">
+                    <h3><i class="fa-solid fa-gamepad"></i> Mobile Controls</h3>
+                    <p>On mobile or tablet devices, use the responsive virtual joystick and D-pad on the screen!</p>
+                </div>
+
+                <div class="how-to-section">
+                    <h3><i class="fa-solid fa-star"></i> Interactive Mechanics</h3>
+                    <div class="mechanics-grid">
+                        <div class="mechanic-item">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <strong>Warp Pipes:</strong> Press <kbd>↓</kbd> on a green pipe to warp between connected parts of a level!
+                        </div>
+                        <div class="mechanic-item">
+                            <i class="fa-solid fa-bomb"></i>
+                            <strong>Moving Bombs:</strong> Watch out for walking green bomb enemies. Stomp them or let them walk into hazards!
+                        </div>
+                        <div class="mechanic-item">
+                            <i class="fa-solid fa-coins"></i>
+                            <strong>Popping Coins:</strong> Smash yellow question blocks from underneath to release golden spinning coins.
+                        </div>
+                        <div class="mechanic-item">
+                            <i class="fa-solid fa-key"></i>
+                            <strong>Super Key Power-Up:</strong> Eat the Golden Key power-up to transform from tiny Owen into Super Owen!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Game Screen -->
+        <div id="game-screen" class="menu-screen">
+            <!-- HUD -->
+            <div id="game-hud" class="glass-panel">
+                <div class="hud-item hud-level">
+                    <span class="hud-label">LEVEL</span>
+                    <span id="hud-level-val" class="hud-value">1-1</span>
+                </div>
+                <div class="hud-item hud-character">
+                    <span class="hud-label">HERO</span>
+                    <span id="hud-char-val" class="hud-value">Owen</span>
+                </div>
+                <div class="hud-item hud-coins">
+                    <i class="fa-solid fa-coins gold-coin-glow"></i>
+                    <span id="hud-coins-val" class="hud-value">00</span>
+                </div>
+                <div class="hud-item hud-score">
+                    <span class="hud-label">SCORE</span>
+                    <span id="hud-score-val" class="hud-value">00000</span>
+                </div>
+                <div class="hud-item hud-time">
+                    <span class="hud-label">TIME</span>
+                    <span id="hud-time-val" class="hud-value">150</span>
+                </div>
+                <div class="hud-item hud-eagle-time" id="hud-eagle-container" style="display: none;">
+                    <span class="hud-label" style="color: #fbc02d;">FLIGHT</span>
+                    <span id="hud-eagle-val" class="hud-value" style="color: #fff;">10.0</span>
+                </div>
+                <div class="hud-actions">
+                    <button id="btn-game-pause" class="btn btn-round-sm" title="Pause Game">
+                        <i class="fa-solid fa-pause"></i>
+                    </button>
+                    <button id="btn-game-sound" class="btn btn-round-sm" title="Toggle Sound">
+                        <i class="fa-solid fa-volume-up"></i>
+                    </button>
+                    <button id="btn-game-music" class="btn btn-round-sm" title="Toggle Music">
+                        <i class="fa-solid fa-music"></i>
+                    </button>
+                    <button id="btn-game-exit" class="btn btn-round-sm btn-danger" title="Exit Game">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas Viewport -->
+            <div class="canvas-container">
+                <canvas id="game-canvas" width="800" height="480"></canvas>
+                
+                <!-- Pause Overlay -->
+                <div id="pause-overlay" class="overlay-panel">
+                    <div class="glass-panel text-center">
+                        <h2>GAME PAUSED</h2>
+                        <div class="overlay-buttons">
+                            <button id="btn-resume-game" class="btn btn-primary">Resume</button>
+                            <button id="btn-restart-level" class="btn btn-secondary">Restart</button>
+                            <button id="btn-pause-exit" class="btn btn-danger">Exit to Menu</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Over Overlay -->
+                <div id="gameover-overlay" class="overlay-panel">
+                    <div class="glass-panel text-center">
+                        <h2 class="accent-text text-large animate-flash">GAME OVER</h2>
+                        <p>Oh no, Owen got squashed!</p>
+                        <div class="overlay-buttons">
+                            <button id="btn-retry-level" class="btn btn-primary">Try Again</button>
+                            <button id="btn-gameover-exit" class="btn btn-danger">Exit to Menu</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Level Complete Overlay -->
+                <div id="victory-overlay" class="overlay-panel">
+                    <div class="glass-panel text-center">
+                        <h2 class="success-text text-large animate-bounce-gentle">LEVEL CLEAR!</h2>
+                        <p>Super Owen has completed the course!</p>
+                        <div class="victory-stats">
+                            <div>Coins: <span id="victory-coins">0</span></div>
+                            <div>Score: <span id="victory-score">0</span></div>
+                        </div>
+                        <div class="overlay-buttons">
+                            <button id="btn-next-level" class="btn btn-primary">Next Level</button>
+                            <button id="btn-victory-exit" class="btn btn-secondary">Exit to Menu</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Virtual On-screen Gamepad Controls (displays on touch screens) -->
+            <div id="virtual-gamepad">
+                <div class="dpad">
+                    <button id="vbtn-left" class="vbtn"><i class="fa-solid fa-arrow-left"></i></button>
+                    <div class="dpad-vertical">
+                        <button id="vbtn-up" class="vbtn"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button id="vbtn-down" class="vbtn"><i class="fa-solid fa-arrow-down"></i></button>
+                    </div>
+                    <button id="vbtn-right" class="vbtn"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div class="action-buttons">
+                    <button id="vbtn-jump" class="vbtn vbtn-action">JUMP</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Level Editor Screen -->
+        <div id="level-editor-screen" class="menu-screen">
+            <div id="editor-header" class="glass-panel">
+                <div class="editor-title-container">
+                    <span class="editor-badge"><i class="fa-solid fa-pen-ruler"></i> EDITOR</span>
+                    <h2>Super Owen Sketch Lab</h2>
+                </div>
+                <div class="editor-header-actions">
+                    <button id="btn-editor-play" class="btn btn-success">
+                        <i class="fa-solid fa-play"></i> Test Level
+                    </button>
+                    <button id="btn-editor-save" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-floppy-disk"></i> Save
+                    </button>
+                    <button id="btn-editor-load" class="btn btn-secondary btn-sm">
+                        <i class="fa-solid fa-folder-open"></i> Load
+                    </button>
+                    <button id="btn-editor-clear" class="btn btn-danger btn-sm">
+                        <i class="fa-solid fa-trash-can"></i> Clear
+                    </button>
+                    <button id="btn-editor-exit" class="btn btn-dark btn-sm">
+                        <i class="fa-solid fa-circle-xmark"></i> Close
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor-workspace">
+                <!-- Sidebar brush selector -->
+                <div id="editor-sidebar" class="glass-panel">
+                    <h3>Blocks & Items</h3>
+                    <div class="brush-grid" id="brush-grid-blocks">
+                        <!-- Filled dynamically in editor.js -->
+                    </div>
+
+                    <h3>Hazards & NPCs</h3>
+                    <div class="brush-grid" id="brush-grid-hazards">
+                        <!-- Filled dynamically in editor.js -->
+                    </div>
+
+                    <div class="editor-instructions">
+                        <p><i class="fa-solid fa-info-circle"></i> Left-click/drag on the canvas to place selected brushes.</p>
+                        <p><i class="fa-solid fa-eraser"></i> Right-click/drag to erase blocks.</p>
+                        <p><i class="fa-solid fa-arrows-up-down-left-right"></i> Middle-click/drag or use scrollbars to pan.</p>
+                    </div>
+                </div>
+
+                <!-- Editor Canvas container -->
+                <div class="editor-canvas-container">
+                    <canvas id="editor-canvas" width="800" height="480"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals (Save / Load / Dialogs) -->
+    <div id="editor-dialog" class="overlay-panel modal-overlay">
+        <div class="glass-panel modal-content text-center">
+            <h3 id="dialog-title">Save Level</h3>
+            <p id="dialog-prompt">Copy the code below to save/share your level:</p>
+            <textarea id="dialog-textarea" readonly></textarea>
+            <div id="dialog-import-container" style="display:none;">
+                <p>Paste your custom level code below to load:</p>
+                <textarea id="dialog-import-textarea"></textarea>
+            </div>
+            <div class="overlay-buttons">
+                <button id="btn-dialog-copy" class="btn btn-primary">Copy Code</button>
+                <button id="btn-dialog-confirm" class="btn btn-success" style="display:none;">Import</button>
+                <button id="btn-dialog-close" class="btn btn-danger">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Game and Engine Modules -->
+    <script src="audio.js"></script>
+    <script src="assets.js"></script>
+    <script src="editor.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
