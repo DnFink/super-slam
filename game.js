@@ -120,20 +120,20 @@ const Game = {
         3:
         [
             "................................................................................................................................................................................................................................................................................................................................",
-            "................................................................................................................................................................................................................................................................................................................................",
-            "............................................K...................................................................................................................................................................................................................................................................................",
+            "..................................................V.......................................V.................................................V...........................................................V.......................................................................................................................",
+            "..............................A.............K..............................A..................................A......................................................A....................................................................................V.....................................................................",
             "................................................................................................................................................................................................................................................................................................................................",
             "................................................................................................................................................................................................................................................................................................................................",
             "...........................................SSS..................................................................................................................................................................................................................................................................................",
             "................................................................................................................................................................................................................................................................................................................................",
             ".......................................SSS....................................................................................................................PPPPP........................................................................SSSSS................................................................................",
-            "........................................................................................................SSS.....................................................................................................................................................................................................................",
-            "......SSS..........................SSS....................PPPP....................SSS..........................................CC.............................................................................................SSSS..............................................................................................",
-            "................................................PPPP........................................................................p.PPPP...............PPPPP....................PPPPP...................p.............................................................................................................................",
-            ".................SSS....SSS....SSS......................................BB?BB..................SSS...............SSS........T.....BB?BB...................................................BB?BB...T...............SSSS..........................................................................................................",
-            "....1.......................................................................................................................t.....................................................................t.....................................................................................E.............................g.........",
-            ".......F......................................................................MMM..F........................................t.........................................................MMM.........t.............................................................................................................................",
-            "SSSSSSSSSSSSSSSLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSLLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSSSSSSLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSSSSSSLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSSSSSSLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+            "........................................................................................................SSS...................................................................................................................................................................................................HH................",
+            "......SSS..........................SSS....................PPPP....................SSS..........................................CC.............................................................................................SSSS............................................................................HH................",
+            "................................................PPPP........................................................................p.PPPP...............PPPPP....................PPPPP...................p...........................................................................................................HH................",
+            ".................SSS....SSS....SSS......................................BB?BB..................SSS...............SSS........T.....BB?BB...................................................BB?BB...T...............SSSS........................................................................................HH................",
+            "....1.......................................................................................................................t.....................................................................t..........................................................................................E.............HH......g.........",
+            ".......F......................................................................MMM..F........................................t.......................................................F.MMMO..R.....tF....O....R....F....O....R....F....R....O....F.........O....R....F....O....R....F....O.....................HH................",
+            "SSSSSSSSSSSSSSSLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSLLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSSSSSSLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSSSSSSLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
         ]
     },
 
@@ -146,15 +146,45 @@ const Game = {
         
         this.bindEvents();
         
-        // Draw cute floating Slam on the main menu
+        // Draw cute floating hero on the main menu and level selector
         const menuCanvas = document.getElementById('menu-char-canvas');
-        if (menuCanvas) {
-            const mCtx = menuCanvas.getContext('2d');
-            let frame = 0;
-            setInterval(() => {
+        const levelSelectCanvas = document.getElementById('level-select-char-canvas');
+        
+        let frame = 0;
+        setInterval(() => {
+            if (menuCanvas && this.gameState === 'menu') {
+                const mCtx = menuCanvas.getContext('2d');
                 mCtx.clearRect(0, 0, 120, 120);
-                drawSlam(mCtx, 40, 40, 40, 40, true, frame++, true);
-            }, 60);
+                this.drawHero(mCtx, 40, 40, 40, 40, true, frame, true);
+            }
+            if (levelSelectCanvas && document.getElementById('level-select-screen').classList.contains('active')) {
+                const lsCtx = levelSelectCanvas.getContext('2d');
+                lsCtx.clearRect(0, 0, 100, 100);
+                this.drawHero(lsCtx, 30, 30, 40, 40, true, frame, true);
+            }
+            frame++;
+        }, 60);
+
+        // Draw characters riding rockets
+        const r1 = document.getElementById('rocket-char-1');
+        const r2 = document.getElementById('rocket-char-2');
+        const r3 = document.getElementById('rocket-char-3');
+        const r4 = document.getElementById('rocket-char-4');
+        if (r1 && r2 && r3 && r4) {
+            const ctx1 = r1.getContext('2d');
+            const ctx2 = r2.getContext('2d');
+            const ctx3 = r3.getContext('2d');
+            const ctx4 = r4.getContext('2d');
+            setInterval(() => {
+                ctx1.clearRect(0, 0, 40, 40);
+                ctx2.clearRect(0, 0, 40, 40);
+                ctx3.clearRect(0, 0, 40, 40);
+                ctx4.clearRect(0, 0, 40, 40);
+                drawCowboy(ctx1, 5, 5, 30, 30, false, 0, true);
+                drawAstronaut(ctx2, 5, 5, 30, 30, false, 0, true);
+                drawNinja(ctx3, 5, 5, 30, 30, false, 0, true);
+                drawFox(ctx4, 5, 5, 30, 30, false, 0, true);
+            }, 100);
         }
         
         // Character selector canvas preview drawers
@@ -176,6 +206,25 @@ const Game = {
     },
 
     /**
+     * Helper to draw the currently selected hero
+     */
+    drawHero(ctx, x, y, w, h, isWalking, walkFrame, facingRight) {
+        switch(this.selectedHero) {
+            case 'cowboy': drawCowboy(ctx, x, y, w, h, isWalking, walkFrame, facingRight); break;
+            case 'astronaut': drawAstronaut(ctx, x, y, w, h, isWalking, walkFrame, facingRight); break;
+            case 'driver': drawDriver(ctx, x, y, w, h, isWalking, walkFrame, facingRight); break;
+            case 'princess': drawPrincess(ctx, x, y, w, h, isWalking, walkFrame, facingRight); break;
+            case 'ninja': drawNinja(ctx, x, y, w, h, isWalking, walkFrame, facingRight); break;
+            case 'fox': drawFox(ctx, x, y, w, h, isWalking, walkFrame, facingRight); break;
+            case 'gorilla': drawGorilla(ctx, x, y, w, h, isWalking, walkFrame, facingRight); break;
+            case 'superslam': drawSlam(ctx, x, y, w, h, isWalking, walkFrame, facingRight); break;
+            case 'bomb': drawWalkingBomb(ctx, x, y, w, h, walkFrame, facingRight); break;
+            case 'superowen': drawOwen(ctx, x, y, w, h, isWalking, walkFrame, facingRight); break;
+            default: drawSlam(ctx, x, y, w, h, isWalking, walkFrame, facingRight);
+        }
+    },
+
+    /**
      * Draws small idle characters on the selection cards.
      */
     drawSelectorPreviews() {
@@ -188,6 +237,7 @@ const Game = {
         const gorillaCanvas = document.getElementById('char-gorilla-canvas');
         const superslamCanvas = document.getElementById('char-superslam-canvas');
         const bombCanvas = document.getElementById('char-bomb-canvas');
+        const superowenCanvas = document.getElementById('char-superowen-canvas');
         
         if (cowboyCanvas && astronautCanvas && driverCanvas) {
             const cCtx = cowboyCanvas.getContext('2d');
@@ -199,6 +249,7 @@ const Game = {
             const gCtx = gorillaCanvas ? gorillaCanvas.getContext('2d') : null;
             const soCtx = superslamCanvas ? superslamCanvas.getContext('2d') : null;
             const bCtx = bombCanvas ? bombCanvas.getContext('2d') : null;
+            const owenCtx = superowenCanvas ? superowenCanvas.getContext('2d') : null;
             
             let frame = 0;
             setInterval(() => {
@@ -211,6 +262,7 @@ const Game = {
                 if (gCtx) gCtx.clearRect(0, 0, 140, 140);
                 if (soCtx) soCtx.clearRect(0, 0, 140, 140);
                 if (bCtx) bCtx.clearRect(0, 0, 140, 140);
+                if (owenCtx) owenCtx.clearRect(0, 0, 140, 140);
                 
                 drawCowboy(cCtx, 40, 40, 60, 60, false, 0, true);
                 drawAstronaut(aCtx, 40, 40, 60, 60, false, 0, true);
@@ -221,6 +273,9 @@ const Game = {
                 if (gCtx) drawGorilla(gCtx, 40, 40, 60, 60, false, 0, true);
                 if (soCtx) drawSlam(soCtx, 40, 40, 60, 60, false, 0, true);
                 if (bCtx) drawWalkingBomb(bCtx, 40, 40, 60, 60, 0, true);
+                if (owenCtx) drawOwen(owenCtx, 40, 40, 60, 60, false, 0, true);
+                
+                frame++;
             }, 100);
         }
     },
@@ -243,6 +298,11 @@ const Game = {
         window.addEventListener('keyup', e => {
             this.keys[e.key] = false;
             this.keys[e.code] = false;
+        });
+
+        // Guard rail: Clear all keys if window loses focus so the player doesn't get stuck walking
+        window.addEventListener('blur', () => {
+            this.keys = {};
         });
 
         // Navigation actions
@@ -318,7 +378,7 @@ const Game = {
         document.getElementById('btn-next-level').addEventListener('click', () => this.startNextLevel());
         document.getElementById('btn-victory-exit').addEventListener('click', () => this.exitToMenu());
         document.getElementById('btn-game-exit').addEventListener('click', () => this.exitToMenu());
-
+        document.getElementById('btn-submit-score').addEventListener('click', () => this.submitScore());
 
         // Responsive virtual D-pad clicks (bind touch to key inputs)
         const touchMappings = [
@@ -341,10 +401,17 @@ const Game = {
                     e.preventDefault();
                     this.keys[mapping.key] = false;
                 });
+                btn.addEventListener('touchcancel', e => {
+                    e.preventDefault();
+                    this.keys[mapping.key] = false;
+                });
                 btn.addEventListener('mousedown', e => {
                     this.keys[mapping.key] = true;
                 });
                 btn.addEventListener('mouseup', e => {
+                    this.keys[mapping.key] = false;
+                });
+                btn.addEventListener('mouseleave', e => {
                     this.keys[mapping.key] = false;
                 });
             }
@@ -362,6 +429,8 @@ const Game = {
         
         if (id === 'main-menu-screen') {
             this.gameState = 'menu';
+        } else if (id === 'level-select-screen') {
+            this.renderLeaderboards();
         }
 
         if (id !== 'game-screen') {
@@ -429,6 +498,7 @@ const Game = {
         this.spawners = [];
         this.blocks = {};
         this.boss = null;
+        this.playerBullets = [];
         
         this.lives = 2;
         if (document.getElementById('hud-lives-val')) {
@@ -468,10 +538,31 @@ const Game = {
                         facingRight: false,
                         isSquashed: false
                     });
+                } else if (char === 'R') {
+                    // Fast rolling bad guy
+                    this.enemies.push({
+                        type: 'roller',
+                        x: c * size,
+                        y: r * size,
+                        vx: -3.0,
+                        vy: 0,
+                        w: size,
+                        h: size,
+                        rollAngle: 0,
+                        isSquashed: false
+                    });
                 } else if (char === 'F') {
                     // Fireball spawner block
                     this.spawners = this.spawners || [];
                     this.spawners.push({ col: c, row: r, timer: Math.random() * 60, type: 'fireball' });
+                } else if (char === 'A') {
+                    // Alien falling spawner
+                    this.spawners = this.spawners || [];
+                    this.spawners.push({ col: c, row: r, timer: Math.random() * 60, type: 'alien' });
+                } else if (char === 'V') {
+                    // Rocket Booster falling spawner
+                    this.spawners = this.spawners || [];
+                    this.spawners.push({ col: c, row: r, timer: Math.random() * 60, type: 'rocket' });
                 } else if (char === 'p') {
                     // Snapping chomper piranha plant
                     this.enemies.push({
@@ -524,7 +615,8 @@ const Game = {
         this.player.isInvincible = false;
         this.player.isPipeTransition = false;
         this.player.powerState = 'normal';
-        this.player.eagleTimer = 0;
+        this.player.hasFirepower = false;
+        this.player.owlTimer = 0;
         this.player.h = 24;
         this.player.w = 24;
         
@@ -596,6 +688,45 @@ const Game = {
         }
     },
 
+    submitScore() {
+        if (this.isCustomLevel) return;
+        const nameInput = document.getElementById('player-name-input');
+        const name = nameInput.value.trim() || 'Anonymous';
+        
+        const lbKey = `super_slam_leaderboard_${this.levelIndex}`;
+        let scores = JSON.parse(localStorage.getItem(lbKey)) || [];
+        scores.push({ name: name, score: this.score });
+        
+        scores.sort((a, b) => b.score - a.score);
+        scores = scores.slice(0, 5); // Keep top 5
+        
+        localStorage.setItem(lbKey, JSON.stringify(scores));
+        
+        document.getElementById('leaderboard-submission-form').style.display = 'none';
+        document.getElementById('score-submitted-msg').style.display = 'block';
+    },
+
+    renderLeaderboards() {
+        for (let i = 1; i <= 3; i++) {
+            const lbKey = `super_slam_leaderboard_${i}`;
+            const scores = JSON.parse(localStorage.getItem(lbKey)) || [];
+            const listEl = document.getElementById(`leaderboard-list-${i}`);
+            if (!listEl) continue;
+            
+            listEl.innerHTML = '';
+            if (scores.length === 0) {
+                listEl.innerHTML = '<li><span class="lb-empty">No scores yet!</span></li>';
+            } else {
+                scores.forEach((entry, idx) => {
+                    const li = document.createElement('li');
+                    if (idx < 3) li.classList.add(`rank-${idx + 1}`);
+                    li.innerHTML = `<span>${idx + 1}. ${entry.name}</span><span>${entry.score}</span>`;
+                    listEl.appendChild(li);
+                });
+            }
+        }
+    },
+
     /* ==========================================================================
        PHYSICS COLLISION DETECTIONS
        ========================================================================== */
@@ -626,7 +757,7 @@ const Game = {
                 this.player.isSpecialMode = false;
                 document.getElementById('hud-special-container').style.display = 'none';
             }
-        } else if (!this.specialUsed && this.gameState === 'playing' && this.player.powerState !== 'eagle') {
+        } else if (!this.specialUsed && this.gameState === 'playing' && this.player.powerState !== 'owl') {
             document.getElementById('hud-special-container').style.display = 'flex';
             document.getElementById('hud-special-val').innerText = "READY [X]";
             if (this.keys['x'] || this.keys['X'] || this.keys['Shift']) {
@@ -649,19 +780,19 @@ const Game = {
             }
         }
         
-        // Eagle flight logic
-        if (this.player.powerState === 'eagle') {
-            this.player.eagleTimer--;
-            document.getElementById('hud-eagle-container').style.display = 'flex';
-            document.getElementById('hud-eagle-val').innerText = (this.player.eagleTimer / 60).toFixed(1);
-            if (this.player.eagleTimer <= 0) {
+        // Owl flight logic
+        if (this.player.powerState === 'owl') {
+            this.player.owlTimer--;
+            document.getElementById('hud-owl-container').style.display = 'flex';
+            document.getElementById('hud-owl-val').innerText = (this.player.owlTimer / 60).toFixed(1);
+            if (this.player.owlTimer <= 0) {
                 this.player.powerState = 'normal';
                 this.player.h = 24;
                 this.player.w = 24;
-                document.getElementById('hud-eagle-container').style.display = 'none';
+                document.getElementById('hud-owl-container').style.display = 'none';
             }
         } else {
-            document.getElementById('hud-eagle-container').style.display = 'none';
+            document.getElementById('hud-owl-container').style.display = 'none';
         }
         
         // Warp pipe cool down timers
@@ -701,8 +832,8 @@ const Game = {
         // Cap horizontal speed
         this.player.vx = Math.max(-maxVx, Math.min(this.player.vx, maxVx));
         
-        if (this.player.powerState === 'eagle') {
-            // Eagle Flight (no gravity)
+        if (this.player.powerState === 'owl') {
+            // Owl Flight (no gravity)
             if (this.keys['ArrowUp'] || this.keys['w'] || this.keys['W'] || this.keys[' '] || this.keys['KeyZ']) {
                 this.player.vy -= acc;
             } else if (this.keys['ArrowDown'] || this.keys['s'] || this.keys['S']) {
@@ -721,7 +852,7 @@ const Game = {
         const jumpPrev = (this.prevKeys[' '] || this.prevKeys['ArrowUp'] || this.prevKeys['w'] || this.prevKeys['W'] || this.prevKeys['KeyZ']);
         const jumpJustPressed = jumpPressed && !jumpPrev;
 
-        if (jumpJustPressed && this.player.powerState !== 'eagle') {
+        if (jumpJustPressed && this.player.powerState !== 'owl') {
             if (this.player.isGrounded) {
                 this.player.vy = -9.6; // jump impulse
                 this.player.isGrounded = false;
@@ -790,6 +921,7 @@ const Game = {
         this.updateSpears();
         this.updateCannons();
         this.updateParticles();
+        this.updatePlayerBullets();
         this.updateCamera();
         
         // Check dynamic collectibles (coins, key)
@@ -851,7 +983,7 @@ const Game = {
                 const char = this.levelGrid[r][c];
                 
                 // Solid list
-                if (char === 'S' || char === 'B' || char === '?' || char === 'K' || char === 'R' || char === 'P' || char === 't' || char === 'T' || char === 'c' || char === '2' || char === '3' || char === '4' || char === '5') {
+                if (char === 'S' || char === 'B' || char === '?' || char === 'K' || char === 'R' || char === 'P' || char === 't' || char === 'T' || char === 'c' || char === '2' || char === '3' || char === '4' || char === '5' || char === 'H') {
                     
                     // Simple overlapping bounds check
                     const bx = c * size;
@@ -1169,7 +1301,7 @@ const Game = {
             }
             
             // Delete bullets out of screen bounds
-            if (bullet.x < this.scrollX - 100 || bullet.x > this.scrollX + 900) {
+            if (bullet.x < this.scrollX - 100 || bullet.x > this.scrollX + 1300) {
                 this.bullets.splice(idx, 1);
             }
         });
@@ -1211,10 +1343,10 @@ const Game = {
                 this.powerups.splice(idx, 1);
                 this.score += 500;
                 
-                // Transform to Eagle!
-                if (p.powerState !== 'eagle') {
-                    p.powerState = 'eagle';
-                    p.eagleTimer = 600; // 10 seconds (60 fps)
+                // Transform to Owl!
+                if (p.powerState !== 'owl') {
+                    p.powerState = 'owl';
+                    p.owlTimer = 600; // 10 seconds (60 fps)
                     p.y -= 24; // push up so it doesn't clip floor
                     p.h = 48; // grow significantly
                     p.w = 48;
@@ -1222,9 +1354,115 @@ const Game = {
                     this.spawnBurstParticles(p.x + 12, p.y + 16, '#fbc02d', 25);
                 } else {
                     // Refill timer
-                    p.eagleTimer = 600;
+                    p.owlTimer = 600;
                     AudioEngine.playSFX('coin');
                 }
+            } else if (p.x < key.x + key.w && p.x + p.w > key.x && p.y < key.y + key.h && p.y + p.h > key.y && key.type === 'firepower') {
+                this.powerups.splice(idx, 1);
+                this.score += 500;
+                p.hasFirepower = true;
+                AudioEngine.playSFX('powerup');
+                this.spawnBurstParticles(p.x + 12, p.y + 16, '#ff3d00', 25);
+                alert("Firepower Core Collected! Press 'C' to shoot fireballs!");
+            }
+        });
+    },
+
+    updatePlayerBullets() {
+        if (!this.playerBullets) this.playerBullets = [];
+        const size = this.cellSize;
+        
+        // Handle shooting input
+        const shootPressed = (this.keys['c'] || this.keys['C']);
+        const shootPrev = (this.prevKeys['c'] || this.prevKeys['C']);
+        if (shootPressed && !shootPrev && this.player.hasFirepower) {
+            this.playerBullets.push({
+                x: this.player.x + (this.player.facingRight ? this.player.w : -8),
+                y: this.player.y + 8,
+                vx: this.player.facingRight ? 5.5 : -5.5,
+                vy: 0,
+                r: 6,
+                facingRight: this.player.facingRight
+            });
+            AudioEngine.playSFX('jump'); // reuse sound for shooting
+        }
+
+        this.playerBullets.forEach((bullet, idx) => {
+            bullet.x += bullet.vx;
+            
+            let destroy = false;
+            
+            // Check wall collision
+            const col = Math.floor(bullet.x / size);
+            const row = Math.floor(bullet.y / size);
+            if (col >= 0 && col < this.levelWidth && row >= 0 && row < this.levelHeight) {
+                const block = this.levelGrid[row][col];
+                if (block === 'H') {
+                    // Break castle wall
+                    this.levelGrid[row][col] = '.';
+                    this.spawnBurstParticles(col * size + size/2, row * size + size/2, '#757575', 15);
+                    AudioEngine.playSFX('stomp');
+                    destroy = true;
+                } else if (block === 'S' || block === 'T' || block === 't' || block === 'B' || block === 'P') {
+                    destroy = true;
+                }
+            }
+            
+            // Check enemy collision
+            if (!destroy) {
+                for (let i = 0; i < this.enemies.length; i++) {
+                    const e = this.enemies[i];
+                    if (!e.isSquashed) {
+                        const ex = e.cx ? e.cx - e.w/2 : e.x;
+                        const ey = e.cy ? e.cy - e.h/2 : e.y;
+                        if (bullet.x < ex + e.w && bullet.x + bullet.r * 2 > ex && bullet.y < ey + e.h && bullet.y + bullet.r * 2 > ey) {
+                            e.isSquashed = true;
+                            this.spawnBurstParticles(ex + e.w/2, ey + e.h/2, '#ff5252', 15);
+                            AudioEngine.playSFX('stomp');
+                            setTimeout(() => { this.enemies = this.enemies.filter(en => en !== e); }, 50);
+                            destroy = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Check boss collision
+            if (!destroy && this.boss && !this.boss.isDead) {
+                const b = this.boss;
+                if (bullet.x < b.x + b.w && bullet.x + bullet.r * 2 > b.x && bullet.y < b.y + b.h && bullet.y + bullet.r * 2 > b.y) {
+                    if (b.hitInvincible === 0) {
+                        b.hp--;
+                        b.hitInvincible = 20;
+                        this.spawnBurstParticles(b.x + 18, b.y + 18, '#ff3d00', 25);
+                        AudioEngine.playSFX('boss_hit');
+                        if (b.hp <= 0) {
+                            b.isDead = true;
+                            this.score += 2000;
+                            AudioEngine.playSFX('victory');
+                            this.spawnBurstParticles(b.x + 18, b.y + 18, '#ffd700', 40);
+                            // Drop firepower core
+                            this.powerups.push({
+                                x: b.x + 4,
+                                y: b.y,
+                                vx: 0,
+                                vy: -4,
+                                w: 24,
+                                h: 24,
+                                type: 'firepower'
+                            });
+                        }
+                    }
+                    destroy = true;
+                }
+            }
+            
+            if (bullet.x < this.scrollX - 100 || bullet.x > this.scrollX + 1300) {
+                destroy = true;
+            }
+            
+            if (destroy) {
+                this.playerBullets.splice(idx, 1);
             }
         });
     },
@@ -1249,7 +1487,7 @@ const Game = {
             }
             
             // Out of bounds
-            if (spear.x < this.scrollX - 50 || spear.x > this.scrollX + 900) {
+            if (spear.x < this.scrollX - 50 || spear.x > this.scrollX + 1300) {
                 this.spears.splice(idx, 1);
             }
         });
@@ -1321,11 +1559,17 @@ const Game = {
                     this.score += 2000;
                     AudioEngine.playSFX('victory');
                     
-                    // Reveal a path: change boss block area to walkable space, spawn goal ship block!
                     this.spawnBurstParticles(b.x + 18, b.y + 18, '#ffd700', 40);
-                    // Automatically place Goal Ship in Level 3 exit on Boss death!
-                    const targetC = Math.min(this.levelWidth - 6, Math.floor(b.x / size) + 4);
-                    this.levelGrid[11][targetC] = 'g';
+                    // Drop Firepower core instead of spawning flag
+                    this.powerups.push({
+                        x: b.x + 4,
+                        y: b.y,
+                        vx: 0,
+                        vy: -4,
+                        w: 24,
+                        h: 24,
+                        type: 'firepower'
+                    });
                 }
             } else if (b.hitInvincible === 0) {
                 if (this.player.isSpecialMode) {
@@ -1363,19 +1607,48 @@ const Game = {
             if (sp.timer <= 0) {
                 sp.timer = 150 + Math.random() * 100;
                 // Only spawn if near camera
+                // Wake up if within 1300px ahead or 600px behind camera
                 const spX = sp.col * this.cellSize;
-                if (spX > this.cameraX - 400 && spX < this.cameraX + 800) {
-                    this.enemies.push({
-                        type: 'fireball',
-                        x: spX,
-                        y: sp.row * this.cellSize,
-                        vx: -3.5, // rolling left
-                        vy: 0,
-                        w: 24,
-                        h: 24,
-                        isSquashed: false,
-                        walkFrame: 0
-                    });
+                if (spX > this.cameraX - 600 && spX < this.cameraX + 1300) {
+                    if (sp.type === 'alien') {
+                        this.enemies.push({
+                            type: 'alien',
+                            x: spX,
+                            y: sp.row * this.cellSize,
+                            vx: 0,
+                            vy: 2.5,
+                            w: 24,
+                            h: 24,
+                            isSquashed: false,
+                            walkFrame: 0,
+                            facingRight: false,
+                            state: 'falling'
+                        });
+                    } else if (sp.type === 'rocket') {
+                        this.enemies.push({
+                            type: 'rocket',
+                            x: spX,
+                            y: sp.row * this.cellSize,
+                            vx: 0,
+                            vy: 7.0,
+                            w: 24,
+                            h: 40,
+                            isSquashed: false,
+                            animTimer: 0
+                        });
+                    } else {
+                        this.enemies.push({
+                            type: 'fireball',
+                            x: spX,
+                            y: sp.row * this.cellSize,
+                            vx: -3.5, // rolling left
+                            vy: 0,
+                            w: 24,
+                            h: 24,
+                            isSquashed: false,
+                            walkFrame: 0
+                        });
+                    }
                 }
             }
         });
@@ -1411,6 +1684,73 @@ const Game = {
                     } else {
                         this.playerHurt();
                     }
+                }
+                return;
+            }
+            
+            if (enemy.type === 'fireHazard') {
+                enemy.animTimer++;
+                if (enemy.animTimer > 180) { // lasts 3 seconds
+                    enemy.isSquashed = true;
+                    setTimeout(() => { this.enemies = this.enemies.filter(e => e !== enemy); }, 10);
+                }
+                const p = this.player;
+                if (p.x < enemy.x + enemy.w && p.x + p.w > enemy.x && p.y < enemy.y + enemy.h && p.y + p.h > enemy.y) {
+                    if (!this.player.isInvincible) this.playerHurt();
+                }
+                return;
+            }
+
+            if (enemy.type === 'rocket') {
+                enemy.animTimer++;
+                enemy.y += enemy.vy;
+                
+                const p = this.player;
+                if (p.x < enemy.x + enemy.w && p.x + p.w > enemy.x && p.y < enemy.y + enemy.h && p.y + p.h > enemy.y) {
+                    if (!this.player.isInvincible) this.playerHurt();
+                }
+
+                const erFoot = Math.floor((enemy.y + enemy.h) / size);
+                const ecFoot = Math.floor((enemy.x + enemy.w/2) / size);
+                if (erFoot < this.levelHeight && ecFoot >= 0 && ecFoot < this.levelWidth) {
+                    const block = this.levelGrid[erFoot][ecFoot];
+                    if (block === 'S' || block === 'B' || block === '?' || block === 'T' || block === 't' || block === 'c' || block === 'H' || block === 'P' || block === 'R') {
+                        // Explode into fire hazard
+                        enemy.isSquashed = true;
+                        this.spawnBurstParticles(enemy.x + enemy.w/2, enemy.y + enemy.h, '#ff5722', 20);
+                        AudioEngine.playSFX('hit');
+                        
+                        this.enemies.push({
+                            type: 'fireHazard',
+                            x: enemy.x,
+                            y: erFoot * size - 24,
+                            w: 24,
+                            h: 24,
+                            animTimer: 0,
+                            isSquashed: false
+                        });
+                        setTimeout(() => { this.enemies = this.enemies.filter(e => e !== enemy); }, 10);
+                    }
+                }
+                return;
+            }
+
+            if (enemy.type === 'alien' && enemy.state === 'falling') {
+                enemy.y += enemy.vy;
+                const erFoot = Math.floor((enemy.y + enemy.h) / size);
+                const ecFoot = Math.floor((enemy.x + enemy.w/2) / size);
+                if (erFoot < this.levelHeight && ecFoot >= 0 && ecFoot < this.levelWidth) {
+                    const block = this.levelGrid[erFoot][ecFoot];
+                    if (block === 'S' || block === 'B' || block === '?' || block === 'T' || block === 't' || block === 'c' || block === 'H' || block === 'P' || block === 'R') {
+                        enemy.y = erFoot * size - enemy.h;
+                        enemy.vy = 0;
+                        enemy.vx = -1.5; // Starts walking left
+                        enemy.state = 'walking';
+                    }
+                }
+                const p = this.player;
+                if (p.x < enemy.x + enemy.w && p.x + p.w > enemy.x && p.y < enemy.y + enemy.h && p.y + p.h > enemy.y) {
+                    if (!this.player.isInvincible) this.playerHurt();
                 }
                 return;
             }
@@ -1524,10 +1864,10 @@ const Game = {
         if (this.player.isSpecialMode) return;
         if (this.player.isInvincible || this.gameState !== 'playing') return;
         
-        if (this.player.powerState === 'eagle') {
+        if (this.player.powerState === 'owl') {
             // Shrink back to base character
             this.player.powerState = 'normal';
-            this.player.eagleTimer = 0;
+            this.player.owlTimer = 0;
             this.player.h = 24; // shrink boundary height
             this.player.w = 24;
             this.player.isInvincible = true;
@@ -1590,13 +1930,22 @@ const Game = {
         AudioEngine.stopMusic();
         AudioEngine.playSFX('victory');
         
-        // Add time to score (10 points per remaining second)
-        const timeBonus = Math.max(0, Math.ceil(this.timeLeft / 60)) * 10;
+        // Add time to score (5 points per remaining second)
+        const timeBonus = Math.max(0, Math.ceil(this.timeLeft / 60)) * 5;
         this.score += timeBonus;
         
         document.getElementById('victory-coins').innerText = this.coins;
         document.getElementById('victory-score').innerText = this.score;
         document.getElementById('victory-overlay').style.display = 'flex';
+        
+        if (!this.isCustomLevel) {
+            document.getElementById('leaderboard-submission-form').style.display = 'flex';
+            document.getElementById('score-submitted-msg').style.display = 'none';
+            document.getElementById('player-name-input').value = '';
+        } else {
+            document.getElementById('leaderboard-submission-form').style.display = 'none';
+            document.getElementById('score-submitted-msg').style.display = 'none';
+        }
         
         // Save high scores in localStorage
         const high = localStorage.getItem('super_slam_highscore') || 0;
@@ -1661,6 +2010,8 @@ const Game = {
                 else if (char === 'c') drawBulletCannon(ctx, tx, ty, size, size);
                 // Goal Boat
                 else if (char === 'g') drawGoalBoat(ctx, tx, ty, size, size);
+                // Castle Wall
+                else if (char === 'H') drawCastleWall(ctx, tx, ty, size, size);
                 
                 // Hazards liquid fills (liquids occupy full width scroll waves)
                 else if (char === 'L') drawLava(ctx, tx, ty, size, size, this.scrollX);
@@ -1670,13 +2021,22 @@ const Game = {
             }
         }
         
-        // 3. Draw active level entities
         this.bullets.forEach(bullet => {
             drawBulletBill(ctx, bullet.x, bullet.y, bullet.w, bullet.h, bullet.facingRight);
         });
+
+        if (this.playerBullets) {
+            this.playerBullets.forEach(bullet => {
+                drawPlayerFireball(ctx, bullet.x, bullet.y, bullet.r, bullet.facingRight);
+            });
+        }
         
         this.powerups.forEach(key => {
-            drawPowerupKey(ctx, key.x, key.y, key.w, key.h);
+            if (key.type === 'firepower') {
+                drawFirepowerItem(ctx, key.x, key.y, key.w, key.h);
+            } else {
+                drawPowerupKey(ctx, key.x, key.y, key.w, key.h);
+            }
         });
         
         this.spears.forEach(spear => {
@@ -1692,6 +2052,14 @@ const Game = {
                 drawPiranhaPlant(ctx, enemy.cx - enemy.w/2, enemy.cy - enemy.h/2, enemy.w, enemy.h, enemy.openRatio);
             } else if (enemy.type === 'fireball') {
                 drawFireball(ctx, enemy.x, enemy.y, enemy.w, enemy.h, enemy.walkFrame);
+            } else if (enemy.type === 'roller') {
+                drawRoller(ctx, enemy.x, enemy.y, enemy.w, enemy.h, enemy.x * 0.1);
+            } else if (enemy.type === 'alien') {
+                drawAlien(ctx, enemy.x, enemy.y, enemy.w, enemy.h, enemy.state === 'walking', enemy.walkFrame, enemy.facingRight);
+            } else if (enemy.type === 'rocket') {
+                drawRocketBooster(ctx, enemy.x, enemy.y, enemy.w, enemy.h, enemy.animTimer);
+            } else if (enemy.type === 'fireHazard') {
+                drawFireHazard(ctx, enemy.x, enemy.y, enemy.w, enemy.h, enemy.animTimer);
             } else {
                 drawWalkingBomb(ctx, enemy.x, enemy.y, enemy.w, enemy.h, enemy.walkFrame, enemy.facingRight);
             }
@@ -1718,8 +2086,8 @@ const Game = {
         }
         
         if (shouldDrawPlayer) {
-            if (p.powerState === 'eagle') {
-                drawEagle(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
+            if (p.powerState === 'owl') {
+                drawOwl(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
             } else {
                 if (this.selectedHero === 'driver') {
                     drawDriver(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
@@ -1739,9 +2107,12 @@ const Game = {
                 } else if (this.selectedHero === 'gorilla') {
                     drawGorilla(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
                     if (p.isSpecialMode) drawSurfboard(ctx, p.x, p.y, p.w, p.h, p.facingRight);
-                } else if (this.selectedHero === 'superslam' || this.selectedHero === 'superowen') {
+                } else if (this.selectedHero === 'superslam') {
                     drawSlam(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
                     if (p.isSpecialMode) drawRV(ctx, p.x, p.y, p.w, p.h, p.facingRight);
+                } else if (this.selectedHero === 'superowen') {
+                    drawOwen(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
+                    if (p.isSpecialMode) drawSportsCar(ctx, p.x, p.y, p.w, p.h, p.facingRight);
                 } else if (this.selectedHero === 'bomb') {
                     drawWalkingBomb(ctx, p.x, p.y, p.w, p.h, p.walkFrame, p.facingRight);
                     if (p.isSpecialMode) drawBombFire(ctx, p.x, p.y, p.w, p.h, p.facingRight);

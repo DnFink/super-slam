@@ -22,7 +22,10 @@
             
             <!-- Funny Space Elements -->
             <div class="space-ufo"></div>
-            <div class="space-rocket"></div>
+            <div class="space-rocket space-rocket-1"><canvas id="rocket-char-1" class="rocket-char-canvas" width="40" height="40"></canvas></div>
+            <div class="space-rocket space-rocket-2"><canvas id="rocket-char-2" class="rocket-char-canvas" width="40" height="40"></canvas></div>
+            <div class="space-rocket space-rocket-3"><canvas id="rocket-char-3" class="rocket-char-canvas" width="40" height="40"></canvas></div>
+            <div class="space-rocket space-rocket-4"><canvas id="rocket-char-4" class="rocket-char-canvas" width="40" height="40"></canvas></div>
             <div class="space-firework"></div>
             <div class="space-firework space-firework-2" style="left: 65%; animation-delay: 4.5s;"></div>
         </div>
@@ -80,7 +83,7 @@
                 <!-- Character 1: Cowboy -->
                 <div class="char-card glass-panel" data-character="cowboy">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-cowboy-canvas" width="80" height="80"></canvas>
+                        <canvas id="char-cowboy-canvas" width="140" height="140"></canvas>
                     </div>
                     <h3 class="char-name">Cowboy</h3>
                     <p class="char-desc">The wild west hero! Sporting a red shirt and brown hat.</p>
@@ -90,7 +93,7 @@
                 <!-- Character 2: Astronaut -->
                 <div class="char-card glass-panel" data-character="astronaut">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-astronaut-canvas" width="80" height="80"></canvas>
+                        <canvas id="char-astronaut-canvas" width="140" height="140"></canvas>
                     </div>
                     <h3 class="char-name">Astronaut</h3>
                     <p class="char-desc">Ready for space! Wearing a bulky spacesuit and bubble helmet.</p>
@@ -100,7 +103,7 @@
                 <!-- Character 3: Driver -->
                 <div class="char-card active glass-panel" data-character="driver">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-driver-canvas" width="80" height="80"></canvas>
+                        <canvas id="char-driver-canvas" width="140" height="140"></canvas>
                     </div>
                     <h3 class="char-name">Driver</h3>
                     <p class="char-desc">Speed demon! Rocking a red racing suit and a white helmet.</p>
@@ -110,7 +113,7 @@
                 <!-- Character 4: Princess -->
                 <div class="char-card glass-panel" data-character="princess">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-princess-canvas" width="80" height="80"></canvas>
+                        <canvas id="char-princess-canvas" width="140" height="140"></canvas>
                     </div>
                     <h3 class="char-name">Princess</h3>
                     <p class="char-desc">A magical fairy princess with a pink dress and a star wand!</p>
@@ -120,7 +123,7 @@
                 <!-- Character 5: Ninja -->
                 <div class="char-card glass-panel" data-character="ninja">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-ninja-canvas" width="80" height="80"></canvas>
+                        <canvas id="char-ninja-canvas" width="140" height="140"></canvas>
                     </div>
                     <h3 class="char-name">Ninja</h3>
                     <p class="char-desc">Swift and stealthy in a dark suit with a sharp katana.</p>
@@ -130,7 +133,7 @@
                 <!-- Character 6: Fox -->
                 <div class="char-card glass-panel" data-character="fox">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-fox-canvas" width="80" height="80"></canvas>
+                        <canvas id="char-fox-canvas" width="140" height="140"></canvas>
                     </div>
                     <h3 class="char-name">Fox</h3>
                     <p class="char-desc">A clever orange fox with a big bushy tail and pointy ears.</p>
@@ -140,7 +143,7 @@
                 <!-- Character 7: Gorilla -->
                 <div class="char-card glass-panel" data-character="gorilla">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-gorilla-canvas" width="80" height="80"></canvas>
+                        <canvas id="char-gorilla-canvas" width="140" height="140"></canvas>
                     </div>
                     <h3 class="char-name">Gorilla</h3>
                     <p class="char-desc">A powerful silverback gorilla with huge arms and a strong chest.</p>
@@ -150,7 +153,7 @@
                 <!-- Character 8: Super Slam -->
                 <div class="char-card glass-panel" data-character="superslam">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-superslam-canvas" width="80" height="80"></canvas>
+                        <canvas id="char-superslam-canvas" width="140" height="140"></canvas>
                     </div>
                     <h3 class="char-name">Super Slam</h3>
                     <p class="char-desc">The original blue wind-up hero with a tiny spark!</p>
@@ -160,11 +163,21 @@
                 <!-- Character 9: Bomb -->
                 <div class="char-card glass-panel" data-character="bomb">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-bomb-canvas" width="80" height="80"></canvas>
+                        <canvas id="char-bomb-canvas" width="140" height="140"></canvas>
                     </div>
                     <h3 class="char-name">Enemy Bomb</h3>
                     <p class="char-desc">A grumpy green walking bomb enemy. Watch out!</p>
-                    <span class="badge badge-primary">Base Form</span>
+                    <span class="badge badge-secondary">Special Use</span>
+                </div>
+                
+                <!-- Character 10: Super Owen -->
+                <div class="char-card glass-panel" data-character="superowen">
+                    <div class="char-card-canvas-wrapper">
+                        <canvas id="char-superowen-canvas" width="140" height="140"></canvas>
+                    </div>
+                    <h3 class="char-name">Super Owen</h3>
+                    <p class="char-desc">A skilled mechanic rocking red and yellow overalls!</p>
+                    <span class="badge badge-primary">Classic Hero</span>
                 </div>
             </div>
             
@@ -178,6 +191,10 @@
             </button>
 
             <h2 class="section-title">Select <span class="accent-text">Level</span></h2>
+            
+            <div class="character-preview-container" style="margin-bottom: 20px;">
+                <canvas id="level-select-char-canvas" width="100" height="100"></canvas>
+            </div>
 
             <div class="levels-container">
                 <!-- Level 1 -->
@@ -186,6 +203,12 @@
                     <div class="level-details">
                         <h3 class="level-name">The Question Lands</h3>
                         <p class="level-description">Traverse yellow question blocks, green pipes with snapping chomper plants, and lava pits.</p>
+                        <div class="level-leaderboard">
+                            <h4><i class="fa-solid fa-trophy"></i> Top Scores</h4>
+                            <ul id="leaderboard-list-1" class="leaderboard-list">
+                                <li><span class="lb-empty">No scores yet!</span></li>
+                            </ul>
+                        </div>
                     </div>
                     <button class="btn btn-start-level btn-primary">Play</button>
                 </div>
@@ -196,6 +219,12 @@
                     <div class="level-details">
                         <h3 class="level-name">Toxic Towers & Saws</h3>
                         <p class="level-description">Avoid rising purple acid, dodge Bullet Bills, jump over spikes, and scale spinning saw spires!</p>
+                        <div class="level-leaderboard">
+                            <h4><i class="fa-solid fa-trophy"></i> Top Scores</h4>
+                            <ul id="leaderboard-list-2" class="leaderboard-list">
+                                <li><span class="lb-empty">No scores yet!</span></li>
+                            </ul>
+                        </div>
                     </div>
                     <button class="btn btn-start-level btn-primary">Play</button>
                 </div>
@@ -206,6 +235,12 @@
                     <div class="level-details">
                         <h3 class="level-name">The Boss Pyramid</h3>
                         <p class="level-description">Cross the bridge over poison, climb the golden pyramid, defeat the Spear Boss, and escape on the lava ship!</p>
+                        <div class="level-leaderboard">
+                            <h4><i class="fa-solid fa-trophy"></i> Top Scores</h4>
+                            <ul id="leaderboard-list-3" class="leaderboard-list">
+                                <li><span class="lb-empty">No scores yet!</span></li>
+                            </ul>
+                        </div>
                     </div>
                     <button class="btn btn-start-level btn-primary">Play</button>
                 </div>
@@ -228,6 +263,7 @@
                         <li><span><kbd>Space</kbd> / <kbd>W</kbd> / <kbd>↑</kbd> / <kbd>Z</kbd></span> Jump (Hold for higher jump)</li>
                         <li><span><kbd>↓</kbd> / <kbd>S</kbd></span> Warp Down Tubes / Pipes</li>
                         <li><span><kbd>X</kbd></span> Special Mode (When Ready)</li>
+                        <li><span><kbd>C</kbd></span> Shoot Fireballs (When Powered Up)</li>
                         <li><span><kbd>Esc</kbd> / <kbd>P</kbd></span> Pause Game</li>
                     </ul>
                 </div>
@@ -257,6 +293,15 @@
                             <strong>Super Key Power-Up:</strong> Eat the Golden Key power-up to transform from tiny Slam into Super Slam!
                         </div>
                     </div>
+                </div>
+
+                <div class="how-to-section">
+                    <h3><i class="fa-solid fa-trophy"></i> Scoring</h3>
+                    <ul class="controls-list">
+                        <li><span>Coins</span> +100 Points each (The best way to score high!)</li>
+                        <li><span>Time Bonus</span> +5 Points for every second left on the clock when finishing a level.</li>
+                        <li><span>Stomping Enemies</span> +200 Points</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -289,9 +334,9 @@
                     <span class="hud-label">TIME</span>
                     <span id="hud-time-val" class="hud-value">150</span>
                 </div>
-                <div class="hud-item hud-eagle-time" id="hud-eagle-container" style="display: none;">
-                    <span class="hud-label" style="color: #fbc02d;">FLIGHT</span>
-                    <span id="hud-eagle-val" class="hud-value" style="color: #fff;">10.0</span>
+                <div class="hud-item hud-owl-time" id="hud-owl-container" style="display: none;">
+                    <span class="hud-label" style="color: #cfd8dc;">OWL FLIGHT</span>
+                    <span id="hud-owl-val" class="hud-value" style="color: #fff;">10.0</span>
                 </div>
                 <div class="hud-item hud-special-time" id="hud-special-container" style="display: none;">
                     <span class="hud-label" style="color: #ff5252;">SPECIAL</span>
@@ -315,7 +360,7 @@
 
             <!-- Canvas Viewport -->
             <div class="canvas-container">
-                <canvas id="game-canvas" width="800" height="480"></canvas>
+                <canvas id="game-canvas" width="1200" height="720"></canvas>
                 
                 <!-- Pause Overlay -->
                 <div id="pause-overlay" class="overlay-panel">
@@ -350,6 +395,11 @@
                             <div>Coins: <span id="victory-coins">0</span></div>
                             <div>Score: <span id="victory-score">0</span></div>
                         </div>
+                        <div id="leaderboard-submission-form" class="leaderboard-submission">
+                            <input type="text" id="player-name-input" placeholder="Enter your name" maxlength="15">
+                            <button id="btn-submit-score" class="btn btn-primary btn-sm">Submit Score</button>
+                        </div>
+                        <div id="score-submitted-msg" class="success-text" style="display: none; margin: 10px 0; font-weight: bold;">Score Submitted!</div>
                         <div class="overlay-buttons">
                             <button id="btn-next-level" class="btn btn-primary">Next Level</button>
                             <button id="btn-victory-exit" class="btn btn-secondary">Exit to Menu</button>

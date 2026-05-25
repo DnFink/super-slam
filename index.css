@@ -120,7 +120,42 @@ body, html {
     height: 100px;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='100' viewBox='0 0 40 100'%3E%3Crect x='10' y='10' width='20' height='60' rx='5' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M10,70 L0,85 M30,70 L40,85 M15,70 L15,80 M25,70 L25,80' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M12,75 Q20,100 28,75' fill='none' stroke='%23ffb300' stroke-width='2'/%3E%3C/svg%3E") no-repeat;
     animation: landRocket 16s ease-in infinite;
-    opacity: 0.8;
+    opacity: 0;
+}
+
+.space-rocket-1 {
+    left: 85%;
+    animation-duration: 16s;
+    transform: scale(0.9);
+}
+
+.space-rocket-2 {
+    left: 20%;
+    animation: takeoffRocket 14s ease-out infinite;
+    animation-delay: 3s;
+    transform: scale(0.7);
+}
+
+.space-rocket-3 {
+    left: 45%;
+    animation: landRocket 19s ease-in infinite;
+    animation-delay: 8s;
+    transform: scale(0.6);
+}
+
+.space-rocket-4 {
+    left: 70%;
+    animation: takeoffRocket 17s ease-out infinite;
+    animation-delay: 7s;
+    transform: scale(0.85);
+}
+
+.rocket-char-canvas {
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 40px;
+    height: 40px;
 }
 
 .space-firework {
@@ -146,11 +181,19 @@ body, html {
 }
 
 @keyframes landRocket {
-    0% { top: -150px; left: 85%; transform: scale(1.2); opacity: 0; }
+    0% { top: -150px; opacity: 0; }
     15% { opacity: 1; }
-    75% { top: 50%; left: 85%; transform: scale(0.9); opacity: 1; }
-    90% { top: 70%; left: 85%; transform: scale(0.8); opacity: 0; }
-    100% { top: 80%; left: 85%; opacity: 0; }
+    75% { top: 50%; opacity: 1; }
+    90% { top: 70%; opacity: 0; }
+    100% { top: 80%; opacity: 0; }
+}
+
+@keyframes takeoffRocket {
+    0% { top: 100%; opacity: 0; }
+    15% { opacity: 1; }
+    75% { top: 10%; opacity: 1; }
+    90% { top: -50px; opacity: 0; }
+    100% { top: -150px; opacity: 0; }
 }
 
 @keyframes explodeFirework {
@@ -397,7 +440,8 @@ body, html {
     padding: 10px 0;
 }
 
-#menu-char-canvas {
+#menu-char-canvas,
+#level-select-char-canvas {
     filter: drop-shadow(0 0 15px rgba(0, 180, 255, 0.3));
     animation: floatCharacter 4s ease-in-out infinite;
 }
@@ -468,6 +512,17 @@ body, html {
     padding: 5px;
     margin-bottom: 10px;
     border: 2px dashed rgba(255,255,255,0.1);
+}
+
+.char-card-canvas-wrapper canvas {
+    width: 80px;
+    height: 80px;
+    display: block;
+}
+
+#character-select-screen {
+    justify-content: flex-start;
+    padding-top: 80px;
 }
 
 .char-card:hover .char-card-canvas-wrapper {
@@ -559,6 +614,52 @@ body, html {
     line-height: 1.3;
 }
 
+.level-leaderboard {
+    margin-top: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.level-leaderboard h4 {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.leaderboard-list li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+}
+
+.leaderboard-list li.rank-1 { color: #ffd700; border-left: 3px solid #ffd700; }
+.leaderboard-list li.rank-2 { color: #c0c0c0; border-left: 3px solid #c0c0c0; }
+.leaderboard-list li.rank-3 { color: #cd7f32; border-left: 3px solid #cd7f32; }
+
+.lb-empty {
+    color: rgba(255,255,255,0.4);
+    font-style: italic;
+    width: 100%;
+    text-align: center;
+}
+
 /* Screen 4: How To Play */
 .how-to-card {
     width: 100%;
@@ -640,7 +741,7 @@ kbd {
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 800px;
+    max-width: 1200px;
     padding: 12px 20px;
     border-radius: 15px;
     margin-bottom: 12px;
@@ -692,8 +793,8 @@ kbd {
 /* Canvas Viewport */
 .canvas-container {
     position: relative;
-    width: 800px;
-    height: 480px;
+    width: 1200px;
+    height: 720px;
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
@@ -762,16 +863,44 @@ kbd {
     background: rgba(0,0,0,0.3);
     padding: 15px;
     border-radius: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     font-family: var(--font-heading);
     font-size: 1.2rem;
 }
+
+.leaderboard-submission {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.leaderboard-submission input {
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 10px;
+    width: 80%;
+    text-align: center;
+    outline: none;
+    transition: var(--transition-fast);
+}
+
+.leaderboard-submission input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(0, 180, 255, 0.3);
+}
+
 
 /* Virtual Joystick & Controls */
 #virtual-gamepad {
     display: none;
     width: 100%;
-    max-width: 800px;
+    max-width: 1200px;
     justify-content: space-between;
     align-items: center;
     padding: 15px 30px;

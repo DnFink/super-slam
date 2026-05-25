@@ -422,52 +422,58 @@ function drawCowboy(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRig
 }
 
 /**
- * Draws Eagle Power-up Form
+ * Draws Owl Power-up Form
  */
-function drawEagle(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
+function drawOwl(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
     ctx.save();
     ctx.translate(x + w / 2, y + h / 2);
     if (!facingRight) ctx.scale(-1, 1);
     
-    // Eagle is a bit larger
+    // Owl is a bit larger
     const scale = Math.min(w / 40, h / 40);
     ctx.scale(scale, scale);
     const bob = isWalking ? Math.sin(walkFrame * 0.5) * 3 : Math.sin(Date.now() / 200) * 2; // Hover bob
     
-    // Tail feathers
-    drawSketchBezier(ctx, -12, 6 + bob, -18, 10 + bob, -16, 14 + bob, -8, 10 + bob, "#4e342e", 2, 0.8);
+    // Tail feathers (White)
+    drawSketchBezier(ctx, -12, 6 + bob, -18, 10 + bob, -16, 14 + bob, -8, 10 + bob, "#cfd8dc", 2, 0.8);
     
     // Wings (flapping based on bob/walkFrame)
     let flapAngle = isWalking ? Math.sin(walkFrame * 1.5) * 0.8 : Math.sin(Date.now() / 150) * 0.5;
     
-    // Back Wing
+    // Back Wing (White with grey tip)
     ctx.save(); ctx.translate(-4, -4 + bob); ctx.rotate(-flapAngle);
-    drawSketchBezier(ctx, 0, 0, -6, -12, 6, -16, 12, -4, "#4e342e", 2, 0.8);
+    drawSketchBezier(ctx, 0, 0, -6, -12, 6, -16, 12, -4, "#b0bec5", 2, 0.8);
     ctx.restore();
     
-    // Body (Brown)
-    drawSketchCircle(ctx, -2, 4 + bob, 10, "#4e342e", "#795548", 2, 0.8);
+    // Body (White/Light Grey)
+    drawSketchCircle(ctx, -2, 4 + bob, 10, "#eceff1", "#ffffff", 2, 0.8);
+    // Dark spots on body
+    drawSketchCircle(ctx, -5, 2 + bob, 1, "#263238", "#263238", 1, 0.2);
+    drawSketchCircle(ctx, -1, 6 + bob, 1, "#263238", "#263238", 1, 0.2);
+    drawSketchCircle(ctx, -7, 7 + bob, 1, "#263238", "#263238", 1, 0.2);
     
-    // Head (White)
-    drawSketchCircle(ctx, 8, -2 + bob, 7, "#e0e0e0", "#ffffff", 2, 0.8);
+    // Head (White, rounder for owl)
+    drawSketchCircle(ctx, 8, -2 + bob, 8, "#eceff1", "#ffffff", 2, 0.8);
     
-    // Yellow Beak
-    ctx.fillStyle = "#fbc02d";
+    // Small Black Beak
+    ctx.fillStyle = "#263238";
     ctx.beginPath();
-    ctx.moveTo(14, -4 + bob);
-    ctx.lineTo(20, -1 + bob);
-    ctx.lineTo(13, 2 + bob);
+    ctx.moveTo(14, -1 + bob);
+    ctx.lineTo(17, 1 + bob);
+    ctx.lineTo(13, 3 + bob);
     ctx.fill();
-    ctx.strokeStyle = "#f57f17";
-    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 1;
     ctx.stroke();
     
-    // Eye
-    drawSketchCircle(ctx, 10, -3 + bob, 1.5, "#000", "#000", 1, 0.5);
+    // Big Yellow Eye
+    drawSketchCircle(ctx, 10, -3 + bob, 3, "#fbc02d", "#ffeb3b", 1.5, 0.5);
+    // Black Pupil
+    drawSketchCircle(ctx, 11, -3 + bob, 1, "#000", "#000", 1, 0.2);
     
-    // Front Wing
+    // Front Wing (White)
     ctx.save(); ctx.translate(0, 0 + bob); ctx.rotate(flapAngle);
-    drawSketchBezier(ctx, -2, 0, -10, -14, 8, -18, 14, -2, "#5d4037", 2, 0.8);
+    drawSketchBezier(ctx, -2, 0, -10, -14, 8, -18, 14, -2, "#cfd8dc", 2, 0.8);
     ctx.restore();
     
     ctx.restore();
@@ -1553,6 +1559,279 @@ function drawRV(ctx, x, y, w, h, facingRight = true) {
     // Wheels
     drawSketchCircle(ctx, -15, 20, 6, "#212121", "#424242", 2, 0.5);
     drawSketchCircle(ctx, 10, 20, 6, "#212121", "#424242", 2, 0.5);
+    
+    ctx.restore();
+}
+
+function drawRoller(ctx, x, y, w, h, rollAngle = 0) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    ctx.rotate(rollAngle);
+    
+    drawSketchCircle(ctx, 0, 0, 12, "#4e342e", "#795548", 2, 0.8);
+    // Draw spikes or treads to make it look like a rolling bad guy
+    const spikes = 6;
+    for (let i = 0; i < spikes; i++) {
+        const angle = (i / spikes) * Math.PI * 2;
+        const px = Math.cos(angle) * 12;
+        const py = Math.sin(angle) * 12;
+        const tipX = Math.cos(angle) * 16;
+        const tipY = Math.sin(angle) * 16;
+        drawSketchLine(ctx, px, py, tipX, tipY, "#3e2723", 2, 0.5);
+    }
+    // Inner swirl
+    drawSketchCircle(ctx, 0, 0, 6, "#3e2723", null, 1.5, 0.5);
+    
+    ctx.restore();
+}
+
+function drawCastleWall(ctx, x, y, w, h) {
+    drawSketchRect(ctx, x, y, w, h, "#424242", "#757575", 2, SketchConfig.jitter);
+    // Draw brick pattern
+    drawSketchLine(ctx, x, y + h/3, x + w, y + h/3, "#212121", 1.5, 0.5);
+    drawSketchLine(ctx, x, y + 2*h/3, x + w, y + 2*h/3, "#212121", 1.5, 0.5);
+    drawSketchLine(ctx, x + w/3, y, x + w/3, y + h/3, "#212121", 1.5, 0.5);
+    drawSketchLine(ctx, x + 2*w/3, y + h/3, x + 2*w/3, y + 2*h/3, "#212121", 1.5, 0.5);
+    drawSketchLine(ctx, x + w/2, y + 2*h/3, x + w/2, y + h, "#212121", 1.5, 0.5);
+}
+
+function drawFirepowerItem(ctx, x, y, w, h, animTimer = 0) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    
+    const bob = Math.sin(Date.now() / 200) * 3;
+    ctx.translate(0, bob);
+    
+    // Glowing flame core
+    const pulse = 10 + Math.sin(Date.now() / 100) * 2;
+    drawSketchCircle(ctx, 0, 0, pulse, "#ff3d00", "#ff9800", 2, 1);
+    drawSketchCircle(ctx, 0, 0, pulse - 4, "#ffeb3b", "#ffff00", 1.5, 0.8);
+    
+    // Sparkles
+    if (Math.floor(Date.now() / 150) % 2 === 0) {
+        drawSketchLine(ctx, -14, -14, -10, -10, "#fff", 2, 0);
+        drawSketchLine(ctx, 14, -14, 10, -10, "#fff", 2, 0);
+    }
+    
+    ctx.restore();
+}
+
+function drawPlayerFireball(ctx, x, y, r, facingRight = true) {
+    ctx.save();
+    ctx.translate(x, y);
+    // Player fireball is a bright blue/cyan flame to distinguish from enemies
+    drawSketchCircle(ctx, 0, 0, r, "#00b0ff", "#40c4ff", 1.5, 1);
+    drawSketchCircle(ctx, 0, 0, r - 3, "#00e5ff", "#84ffff", 1, 0.8);
+    drawSketchCircle(ctx, 0, 0, r - 6, "rgba(0,0,0,0)", "#ffffff", 1, 0.5);
+    
+    // Tail
+    const tailDir = facingRight ? -1 : 1;
+    drawSketchLine(ctx, 0, 0, tailDir * r * 1.5, 0, "#00e5ff", 2, 1);
+    ctx.restore();
+}
+
+/**
+ * Draws Super Owen (Mechanic / Mario without mustache)
+ */
+function drawOwen(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    const scale = Math.min(w / 32, h / 32);
+    ctx.scale(scale, scale);
+    const bob = isWalking ? Math.sin(walkFrame * 0.5) * 2 : 0;
+    
+    // Feet (Brown shoes)
+    let leftFootY = 12, rightFootY = 12;
+    if (isWalking) {
+        const offset = Math.sin(walkFrame * 0.5) * 4;
+        leftFootY += offset; rightFootY -= offset;
+    }
+    drawSketchCircle(ctx, -5, leftFootY, 4, "#5d4037", "#795548", 1.5, 0.8);
+    drawSketchCircle(ctx, 5, rightFootY, 4, "#5d4037", "#795548", 1.5, 0.8);
+    
+    // Body (Yellow Overalls & Red Shirt)
+    drawSketchRect(ctx, -7, -2 + bob, 14, 10, "#b71c1c", "#e53935", 2, 1); // Red Shirt
+    drawSketchRect(ctx, -6, 4 + bob, 12, 6, "#f57f17", "#fbc02d", 1.5, 1); // Yellow Overalls
+    // Red Buttons
+    drawSketchCircle(ctx, -3, 4 + bob, 1.5, "#d32f2f", "#f44336", 1, 1);
+    drawSketchCircle(ctx, 3, 4 + bob, 1.5, "#d32f2f", "#f44336", 1, 1);
+    
+    // Arms (Red sleeves, White gloves)
+    let armAngle = isWalking ? Math.sin(walkFrame * 0.5) * 0.5 : 0.2;
+    ctx.save(); ctx.translate(-7, 1 + bob); ctx.rotate(armAngle);
+    drawSketchRect(ctx, -5, -2, 5, 4, "#b71c1c", "#e53935", 1.5, 0.8);
+    drawSketchCircle(ctx, -5, 0, 2.5, "#fff", "#fff", 1.5, 0.8);
+    ctx.restore();
+    
+    ctx.save(); ctx.translate(7, 1 + bob); ctx.rotate(-armAngle);
+    drawSketchRect(ctx, 0, -2, 5, 4, "#b71c1c", "#e53935", 1.5, 0.8);
+    drawSketchCircle(ctx, 5, 0, 2.5, "#fff", "#fff", 1.5, 0.8);
+    ctx.restore();
+    
+    // Head (Peach skin)
+    drawSketchCircle(ctx, 0, -6 + bob, 6, "#ff8a65", "#ffcc80", 2, 0.8);
+    // Big Nose
+    drawSketchCircle(ctx, 5, -5 + bob, 2.5, "#ff8a65", "#ffcc80", 1.5, 0.8);
+    // Eye (No mustache!)
+    drawSketchCircle(ctx, 3, -7 + bob, 1.2, "#000", "#000", 1, 0.5);
+    
+    // Red Hat (Mechanic cap)
+    drawSketchBezier(ctx, -7, -9 + bob, -3, -15 + bob, 5, -15 + bob, 9, -9 + bob, "#b71c1c", 2, 1);
+    // Hat brim
+    drawSketchLine(ctx, 3, -9 + bob, 10, -9 + bob, "#b71c1c", 2, 1);
+    
+    ctx.restore();
+}
+
+/**
+ * Draws an Alien enemy
+ */
+function drawAlien(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    const scale = Math.min(w / 32, h / 32);
+    ctx.scale(scale, scale);
+    const bob = isWalking ? Math.sin(walkFrame * 0.5) * 2 : 0;
+    
+    // Glass dome
+    drawSketchCircle(ctx, 0, -6 + bob, 10, "rgba(224, 247, 250, 0.5)", "#80deea", 1.5, 0.9);
+    
+    // Green alien head inside dome
+    drawSketchCircle(ctx, 0, -4 + bob, 6, "#69f0ae", "#00e676", 1.5, 0.8);
+    // Big black eyes
+    ctx.fillStyle = "#000";
+    ctx.beginPath(); ctx.ellipse(-2, -5 + bob, 1.5, 3, 0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(3, -5 + bob, 1.5, 3, -0.2, 0, Math.PI * 2); ctx.fill();
+    
+    // Hovering UFO base
+    drawSketchEllipse(ctx, 0, 8 + bob, 14, 6, "#90a4ae", "#455a64", 2, 0.9);
+    // UFO lights
+    const lightColor = (walkFrame % 20 < 10) ? "#ffff00" : "#ff1744";
+    drawSketchCircle(ctx, -8, 8 + bob, 1.5, lightColor, lightColor, 1, 0.8);
+    drawSketchCircle(ctx, 0, 9 + bob, 1.5, lightColor, lightColor, 1, 0.8);
+    drawSketchCircle(ctx, 8, 8 + bob, 1.5, lightColor, lightColor, 1, 0.8);
+    
+    ctx.restore();
+}
+
+/**
+ * Draws a falling Rogue Rocket Booster
+ */
+function drawRocketBooster(ctx, x, y, w, h, animTimer = 0) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    const scale = Math.min(w / 24, h / 40);
+    ctx.scale(scale, scale);
+    
+    // Rocket Body
+    drawSketchRect(ctx, -6, -10, 12, 16, "#cfd8dc", "#78909c", 2, 1);
+    // Nose cone
+    drawSketchBezier(ctx, -6, -10, -3, -20, 3, -20, 6, -10, "#e53935", 2, 1);
+    // Fins
+    drawSketchBezier(ctx, -6, 2, -12, 6, -10, 10, -6, 6, "#e53935", 1.5, 1);
+    drawSketchBezier(ctx, 6, 2, 12, 6, 10, 10, 6, 6, "#e53935", 1.5, 1);
+    
+    // Engine Nozzle
+    drawSketchRect(ctx, -4, 6, 8, 4, "#455a64", "#263238", 1.5, 1);
+    
+    // Flames from nozzle (pointing up since it's falling)
+    // Wait, if it's a booster falling, flames point opposite to fall direction (upwards)
+    // Actually, if it's rogue it might be firing downwards, propelling it down! That makes it fall faster. Let's make flames point UP as it falls.
+    const flameFlicker = Math.sin(animTimer * 1.5) * 4;
+    drawSketchBezier(ctx, -3, -12, 0, -20 - flameFlicker, 3, -12, 0, -10, "#ff9800", 2, 0.8);
+    drawSketchBezier(ctx, -1, -12, 0, -25 + flameFlicker, 1, -12, 0, -10, "#ffeb3b", 1.5, 0.9);
+    
+    ctx.restore();
+}
+
+/**
+ * Draws a temporary fire hazard
+ */
+function drawFireHazard(ctx, x, y, w, h, animTimer = 0) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    const scale = Math.min(w / 24, h / 24);
+    ctx.scale(scale, scale);
+    
+    const f1 = Math.sin(animTimer * 0.8) * 3;
+    const f2 = Math.cos(animTimer * 1.2) * 2;
+    
+    // Main flame (Orange/Red)
+    drawSketchBezier(ctx, -8, 12, -4, -4 + f1, 0, -12 + f2, 8, 12, "#ff5722", 2, 0.9);
+    // Inner flame (Yellow)
+    drawSketchBezier(ctx, -4, 12, -2, 2 + f2, 0, -4 + f1, 4, 12, "#ffeb3b", 1.5, 0.9);
+    
+    // Embers
+    if (animTimer % 15 < 5) drawSketchCircle(ctx, -6, -4 - f1, 1, "#ff9800", "#ff9800", 1, 0.8);
+    if (animTimer % 20 < 8) drawSketchCircle(ctx, 4, -8 - f2, 1.5, "#ffeb3b", "#ffeb3b", 1, 0.8);
+    
+    ctx.restore();
+}
+
+/**
+ * Draws a Red Sports Car (Super Owen's Special)
+ */
+function drawSportsCar(ctx, x, y, w, h, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    
+    // Scale car to be larger and overlap bounds a bit for a dramatic effect
+    const scale = Math.min(w / 25, h / 20);
+    ctx.scale(scale, scale);
+    
+    const bob = Math.sin(Date.now() / 60) * 1.5;
+    
+    // Wheels (Black with silver rims)
+    drawSketchCircle(ctx, -12, 10 + bob, 5, "#212121", "#424242", 2, 1); // Back wheel
+    drawSketchCircle(ctx, -12, 10 + bob, 2, "#9e9e9e", "#e0e0e0", 1, 1); // Rim
+    
+    drawSketchCircle(ctx, 12, 10 + bob, 5, "#212121", "#424242", 2, 1);  // Front wheel
+    drawSketchCircle(ctx, 12, 10 + bob, 2, "#9e9e9e", "#e0e0e0", 1, 1);  // Rim
+    
+    // Main Red Car Body
+    ctx.fillStyle = "#d32f2f";
+    ctx.beginPath();
+    ctx.moveTo(-18, 5 + bob);
+    ctx.lineTo(-18, -2 + bob); // Rear
+    ctx.lineTo(-10, -2 + bob); // Trunk
+    ctx.lineTo(-4, -10 + bob); // Back window
+    ctx.lineTo(4, -10 + bob);  // Roof
+    ctx.lineTo(12, -2 + bob);  // Windshield
+    ctx.lineTo(20, -2 + bob);  // Hood
+    ctx.lineTo(22, 5 + bob);   // Front bumper
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "#b71c1c";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    
+    // Windshield (Light blue glass)
+    ctx.fillStyle = "#e0f7fa";
+    ctx.beginPath();
+    ctx.moveTo(5, -9 + bob);
+    ctx.lineTo(-1, -9 + bob);
+    ctx.lineTo(3, -2 + bob);
+    ctx.lineTo(10, -2 + bob);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "#80deea";
+    ctx.stroke();
+    
+    // Headlight (Yellow/White)
+    drawSketchCircle(ctx, 20, 2 + bob, 1.5, "#ffeb3b", "#ffffff", 1, 1);
+    
+    // Tail light (Red)
+    drawSketchRect(ctx, -18, 0 + bob, 2, 3, "#ff1744", "#ff8a80", 1, 1);
+    
+    // Exhaust Flame
+    const flameSize = Math.random() * 4 + 2;
+    drawSketchBezier(ctx, -18, 6 + bob, -22 - flameSize, 4 + bob, -22 - flameSize, 8 + bob, -18, 8 + bob, "#ff9800", 2, 0.8);
+    
+    // Driver silhouette (Super Owen)
+    drawSketchCircle(ctx, -1, -6 + bob, 3, "#b71c1c", "#b71c1c", 1, 1); // Red hat silhouette
     
     ctx.restore();
 }
