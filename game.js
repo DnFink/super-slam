@@ -235,10 +235,7 @@ const Game = {
         document.getElementById('btn-campaign').addEventListener('click', () => {
             this.showScreen('level-select-screen');
         });
-        document.getElementById('btn-level-editor').addEventListener('click', () => {
-            this.showScreen('level-editor-screen');
-            LevelEditor.init();
-        });
+
         document.getElementById('btn-select-character').addEventListener('click', () => {
             this.showScreen('character-select-screen');
         });
@@ -308,61 +305,6 @@ const Game = {
         document.getElementById('btn-victory-exit').addEventListener('click', () => this.exitToMenu());
         document.getElementById('btn-game-exit').addEventListener('click', () => this.exitToMenu());
 
-        // Level Editor testing hooks
-        document.getElementById('btn-editor-play').addEventListener('click', () => {
-            const levelData = LevelEditor.exportLevelData();
-            if (levelData) {
-                localStorage.setItem('super_owen_custom_level', levelData);
-                this.startCustomLevel(levelData);
-            }
-        });
-        document.getElementById('btn-editor-save').addEventListener('click', () => {
-            const data = LevelEditor.exportLevelData();
-            localStorage.setItem('super_owen_custom_level', data);
-            document.getElementById('dialog-title').innerText = "Level Saved";
-            document.getElementById('dialog-prompt').innerText = "Copy this code to share with friends:";
-            document.getElementById('dialog-textarea').value = data;
-            document.getElementById('dialog-textarea').style.display = "block";
-            document.getElementById('dialog-import-container').style.display = "none";
-            document.getElementById('btn-dialog-copy').style.display = "inline-flex";
-            document.getElementById('btn-dialog-confirm').style.display = "none";
-            document.getElementById('editor-dialog').style.display = "flex";
-        });
-        document.getElementById('btn-editor-load').addEventListener('click', () => {
-            document.getElementById('dialog-title').innerText = "Import Level";
-            document.getElementById('dialog-prompt').innerText = "Paste your custom level code below:";
-            document.getElementById('dialog-textarea').style.display = "none";
-            document.getElementById('dialog-import-container').style.display = "block";
-            document.getElementById('btn-dialog-copy').style.display = "none";
-            document.getElementById('btn-dialog-confirm').style.display = "inline-flex";
-            document.getElementById('editor-dialog').style.display = "flex";
-        });
-        document.getElementById('btn-editor-clear').addEventListener('click', () => {
-            if (confirm("Are you sure you want to wipe the level canvas?")) {
-                LevelEditor.resetGrid();
-            }
-        });
-        document.getElementById('btn-editor-exit').addEventListener('click', () => {
-            this.showScreen('main-menu-screen');
-        });
-
-        // Modals listeners
-        document.getElementById('btn-dialog-close').addEventListener('click', () => {
-            document.getElementById('editor-dialog').style.display = "none";
-        });
-        document.getElementById('btn-dialog-copy').addEventListener('click', () => {
-            const txt = document.getElementById('dialog-textarea');
-            txt.select();
-            document.execCommand('copy');
-            alert("Code copied to clipboard!");
-        });
-        document.getElementById('btn-dialog-confirm').addEventListener('click', () => {
-            const code = document.getElementById('dialog-import-textarea').value;
-            if (code) {
-                LevelEditor.importLevelData(code);
-                document.getElementById('editor-dialog').style.display = "none";
-            }
-        });
 
         // Responsive virtual D-pad clicks (bind touch to key inputs)
         const touchMappings = [

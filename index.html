@@ -38,9 +38,7 @@
                     <button id="btn-campaign" class="btn btn-primary btn-large">
                         <i class="fa-solid fa-play"></i> Play Campaign
                     </button>
-                    <button id="btn-level-editor" class="btn btn-secondary btn-large">
-                        <i class="fa-solid fa-pen-ruler"></i> Level Editor
-                    </button>
+
                     <button id="btn-select-character" class="btn btn-tertiary">
                         <i class="fa-solid fa-user-gear"></i> Select Character
                     </button>
@@ -365,82 +363,9 @@
             </div>
         </div>
 
-        <!-- 6. Level Editor Screen -->
-        <div id="level-editor-screen" class="menu-screen">
-            <div id="editor-header" class="glass-panel">
-                <div class="editor-title-container">
-                    <span class="editor-badge"><i class="fa-solid fa-pen-ruler"></i> EDITOR</span>
-                    <h2>Super Owen Sketch Lab</h2>
-                </div>
-                <div class="editor-header-actions">
-                    <button id="btn-editor-play" class="btn btn-success">
-                        <i class="fa-solid fa-play"></i> Test Level
-                    </button>
-                    <button id="btn-editor-save" class="btn btn-primary btn-sm">
-                        <i class="fa-solid fa-floppy-disk"></i> Save
-                    </button>
-                    <button id="btn-editor-load" class="btn btn-secondary btn-sm">
-                        <i class="fa-solid fa-folder-open"></i> Load
-                    </button>
-                    <button id="btn-editor-clear" class="btn btn-danger btn-sm">
-                        <i class="fa-solid fa-trash-can"></i> Clear
-                    </button>
-                    <button id="btn-editor-exit" class="btn btn-dark btn-sm">
-                        <i class="fa-solid fa-circle-xmark"></i> Close
-                    </button>
-                </div>
-            </div>
-
-            <div class="editor-workspace">
-                <!-- Sidebar brush selector -->
-                <div id="editor-sidebar" class="glass-panel">
-                    <h3>Blocks & Items</h3>
-                    <div class="brush-grid" id="brush-grid-blocks">
-                        <!-- Filled dynamically in editor.js -->
-                    </div>
-
-                    <h3>Hazards & NPCs</h3>
-                    <div class="brush-grid" id="brush-grid-hazards">
-                        <!-- Filled dynamically in editor.js -->
-                    </div>
-
-                    <div class="editor-instructions">
-                        <p><i class="fa-solid fa-info-circle"></i> Left-click/drag on the canvas to place selected brushes.</p>
-                        <p><i class="fa-solid fa-eraser"></i> Right-click/drag to erase blocks.</p>
-                        <p><i class="fa-solid fa-arrows-up-down-left-right"></i> Middle-click/drag or use scrollbars to pan.</p>
-                    </div>
-                </div>
-
-                <!-- Editor Canvas container -->
-                <div class="editor-canvas-container">
-                    <canvas id="editor-canvas" width="800" height="480"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modals (Save / Load / Dialogs) -->
-    <div id="editor-dialog" class="overlay-panel modal-overlay">
-        <div class="glass-panel modal-content text-center">
-            <h3 id="dialog-title">Save Level</h3>
-            <p id="dialog-prompt">Copy the code below to save/share your level:</p>
-            <textarea id="dialog-textarea" readonly></textarea>
-            <div id="dialog-import-container" style="display:none;">
-                <p>Paste your custom level code below to load:</p>
-                <textarea id="dialog-import-textarea"></textarea>
-            </div>
-            <div class="overlay-buttons">
-                <button id="btn-dialog-copy" class="btn btn-primary">Copy Code</button>
-                <button id="btn-dialog-confirm" class="btn btn-success" style="display:none;">Import</button>
-                <button id="btn-dialog-close" class="btn btn-danger">Close</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Core Game and Engine Modules -->
     <script src="audio.js"></script>
     <script src="assets.js"></script>
-    <script src="editor.js"></script>
     <script src="game.js"></script>
 </body>
 </html>
