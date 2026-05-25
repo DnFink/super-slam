@@ -1181,6 +1181,46 @@ function drawPowerupKey(ctx, x, y, w, h) {
     ctx.restore();
 }
 
+/**
+ * Draws the Invincibility Diamond Power-Up
+ */
+function drawInvincibilityDiamond(ctx, x, y, w, h) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    
+    const bob = Math.sin(Date.now() / 200) * 3;
+    ctx.translate(0, bob);
+    
+    // Blinking effect
+    const isBlink = Math.floor(Date.now() / 150) % 2 === 0;
+    const fillColor = isBlink ? "#ffffff" : "#00e5ff"; // Blink between white and cyan/blue
+    const strokeColor = "#00b4d8";
+    
+    // Scale down a bit to fit inside block size
+    ctx.scale(0.9, 0.9);
+    
+    // Draw Diamond shape
+    ctx.fillStyle = fillColor;
+    ctx.beginPath();
+    ctx.moveTo(0, -14); // Top
+    ctx.lineTo(10, 0);  // Right
+    ctx.lineTo(0, 14);  // Bottom
+    ctx.lineTo(-10, 0); // Left
+    ctx.closePath();
+    ctx.fill();
+    
+    // Add sketchy outline
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 2;
+    strokeJitter(ctx, getJitterTimeIndex());
+    
+    // Draw little eyes
+    drawSketchCircle(ctx, -3, 0, 1.5, "#000", "#000", 1, 0);
+    drawSketchCircle(ctx, 3, 0, 1.5, "#000", "#000", 1, 0);
+    
+    ctx.restore();
+}
+
 
 function drawHorse(ctx, x, y, w, h, facingRight = true) {
     ctx.save();

@@ -251,7 +251,6 @@ const Game = {
             const bCtx = bombCanvas ? bombCanvas.getContext('2d') : null;
             const owenCtx = superowenCanvas ? superowenCanvas.getContext('2d') : null;
             
-            let frame = 0;
             setInterval(() => {
                 cCtx.clearRect(0, 0, 140, 140);
                 aCtx.clearRect(0, 0, 140, 140);
@@ -274,8 +273,6 @@ const Game = {
                 if (soCtx) drawSlam(soCtx, 40, 40, 60, 60, false, 0, true);
                 if (bCtx) drawWalkingBomb(bCtx, 40, 40, 60, 60, 0, true);
                 if (owenCtx) drawOwen(owenCtx, 40, 40, 60, 60, false, 0, true);
-                
-                frame++;
             }, 100);
         }
     },
@@ -405,13 +402,13 @@ const Game = {
                     e.preventDefault();
                     this.keys[mapping.key] = false;
                 });
-                btn.addEventListener('mousedown', e => {
+                btn.addEventListener('mousedown', () => {
                     this.keys[mapping.key] = true;
                 });
-                btn.addEventListener('mouseup', e => {
+                btn.addEventListener('mouseup', () => {
                     this.keys[mapping.key] = false;
                 });
-                btn.addEventListener('mouseleave', e => {
+                btn.addEventListener('mouseleave', () => {
                     this.keys[mapping.key] = false;
                 });
             }
@@ -608,6 +605,20 @@ const Game = {
             }
         }
 
+        // Assign one random ? block per level to be an Invincibility Star
+        let qBlocks = [];
+        for (let r = 0; r < this.levelHeight; r++) {
+            for (let c = 0; c < this.levelWidth; c++) {
+                if (this.levelGrid[r][c] === '?') {
+                    qBlocks.push({r, c});
+                }
+            }
+        }
+        if (qBlocks.length > 0) {
+            const rand = Math.floor(Math.random() * qBlocks.length);
+            this.levelGrid[qBlocks[rand].r][qBlocks[rand].c] = 'I';
+        }
+
         // Apply selected hero state properties
         this.player.vx = 0;
         this.player.vy = 0;
@@ -654,7 +665,7 @@ const Game = {
      */
     startGameLoop() {
         const loop = () => {
-            if (this.gameState === 'playing') {
+            if (this.gameState === 'playing' || this.gameState === 'victory_celebration') {
                 this.update();
                 this.draw();
                 requestAnimationFrame(loop);
@@ -693,6 +704,20 @@ const Game = {
         const nameInput = document.getElementById('player-name-input');
         const name = nameInput.value.trim() || 'Anonymous';
         
+        const badWords = [
+            'fuck', 'shit', 'bitch', 'asshole', 'dick', 'cock', 'pussy', 'cunt', 
+            'whore', 'slut', 'faggot', 'nigger', 'nigga', 'bastard', 'sex', 'porn', 
+            'boob', 'tits', 'vagina', 'penis', 'cum', 'jizz', 'nude', 'naked'
+        ];
+        
+        const lowerName = name.toLowerCase();
+        for (let word of badWords) {
+            if (lowerName.includes(word)) {
+                alert('Please use a kid-friendly name!');
+                return;
+            }
+        }
+
         const lbKey = `super_slam_leaderboard_${this.levelIndex}`;
         let scores = JSON.parse(localStorage.getItem(lbKey)) || [];
         scores.push({ name: name, score: this.score });
@@ -735,6 +760,28 @@ const Game = {
      * Main ticking calculation method.
      */
     update() {
+        if (this.gameState === 'victory_celebration') {
+            this.celebrationTimer--;
+            
+            // Randomly spawn fireworks around the player
+            if (this.celebrationTimer % 15 === 0) {
+                const fx = this.player.x + (Math.random() * 200 - 100);
+                const fy = this.player.y - 50 - Math.random() * 150;
+                const colors = ['#ff5252', '#4caf50', '#00b4ff', '#ffd700', '#e040fb'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                this.spawnBurstParticles(fx, fy, color, 40);
+                AudioEngine.playSFX('powerup');
+            }
+            
+            this.updateParticles();
+            this.updateCamera();
+            
+            if (this.celebrationTimer <= 0) {
+                this.showVictoryPopup();
+            }
+            return;
+        }
+
         // Handle Level Timer countdown
         if (this.timeLeft > 0 && !this.player.isDead) {
             this.timeLeft--;
@@ -1058,6 +1105,22 @@ const Game = {
                 isGrounded: false
             });
         }
+        // Question Mark `I` containing Invincibility Diamond!
+        else if (char === 'I') {
+            this.levelGrid[r][c] = 'S';
+            AudioEngine.playSFX('powerup');
+            
+            this.powerups.push({
+                type: 'diamond',
+                x: c * this.cellSize + 4,
+                y: (r - 1) * this.cellSize,
+                vx: 1.5,
+                vy: -3.0,
+                w: 20,
+                h: 20,
+                isGrounded: false
+            });
+        }
         // Breakable normal brick blocks
         else if (char === 'B') {
             if (this.player.powerState === 'super') {
@@ -1150,7 +1213,7 @@ const Game = {
     updateEnemies() {
         const size = this.cellSize;
         
-        this.enemies.forEach((enemy, idx) => {
+        this.enemies.forEach((enemy) => {
             if (enemy.isSquashed) return;
             
             // 1. Snapping Chomper plant logic
@@ -1337,33 +1400,38 @@ const Game = {
                 }
             }
             
-            // Eat powerup key!
+            // Eat powerup!
             const p = this.player;
             if (p.x < key.x + key.w && p.x + p.w > key.x && p.y < key.y + key.h && p.y + p.h > key.y) {
                 this.powerups.splice(idx, 1);
                 this.score += 500;
                 
-                // Transform to Owl!
-                if (p.powerState !== 'owl') {
-                    p.powerState = 'owl';
-                    p.owlTimer = 600; // 10 seconds (60 fps)
-                    p.y -= 24; // push up so it doesn't clip floor
-                    p.h = 48; // grow significantly
-                    p.w = 48;
+                if (key.type === 'firepower') {
+                    p.hasFirepower = true;
                     AudioEngine.playSFX('powerup');
-                    this.spawnBurstParticles(p.x + 12, p.y + 16, '#fbc02d', 25);
+                    this.spawnBurstParticles(p.x + 12, p.y + 16, '#ff3d00', 25);
+                    alert("Firepower Core Collected! Press 'C' to shoot fireballs!");
+                } else if (key.type === 'diamond') {
+                    p.isInvincible = true;
+                    p.invincibilityTimer = 600; // 10 seconds of invincibility
+                    AudioEngine.playSFX('powerup');
+                    this.spawnBurstParticles(p.x + 12, p.y + 16, '#00e5ff', 30);
                 } else {
-                    // Refill timer
-                    p.owlTimer = 600;
-                    AudioEngine.playSFX('coin');
+                    // Default is Owl Key
+                    if (p.powerState !== 'owl') {
+                        p.powerState = 'owl';
+                        p.owlTimer = 600; // 10 seconds (60 fps)
+                        p.y -= 24; // push up so it doesn't clip floor
+                        p.h = 48; // grow significantly
+                        p.w = 48;
+                        AudioEngine.playSFX('powerup');
+                        this.spawnBurstParticles(p.x + 12, p.y + 16, '#fbc02d', 25);
+                    } else {
+                        // Refill timer
+                        p.owlTimer = 600;
+                        AudioEngine.playSFX('coin');
+                    }
                 }
-            } else if (p.x < key.x + key.w && p.x + p.w > key.x && p.y < key.y + key.h && p.y + p.h > key.y && key.type === 'firepower') {
-                this.powerups.splice(idx, 1);
-                this.score += 500;
-                p.hasFirepower = true;
-                AudioEngine.playSFX('powerup');
-                this.spawnBurstParticles(p.x + 12, p.y + 16, '#ff3d00', 25);
-                alert("Firepower Core Collected! Press 'C' to shoot fireballs!");
             }
         });
     },
@@ -1579,14 +1647,7 @@ const Game = {
                     AudioEngine.playSFX('stomp');
                     this.score += 500;
                 } else {
-                    if (this.player.isSpecialMode) {
-                        this.spawnBurstParticles(enemy.x, enemy.y, '#f44336', 15);
-                        enemy.isSquashed = true;
-                        setTimeout(() => { this.enemies = this.enemies.filter(e => e !== enemy); }, 50);
-                        AudioEngine.playSFX('stomp');
-                    } else {
-                        this.playerHurt();
-                    }
+                    this.playerHurt();
                 }
             }
         }
@@ -1609,7 +1670,7 @@ const Game = {
                 // Only spawn if near camera
                 // Wake up if within 1300px ahead or 600px behind camera
                 const spX = sp.col * this.cellSize;
-                if (spX > this.cameraX - 600 && spX < this.cameraX + 1300) {
+                if (spX > this.scrollX - 600 && spX < this.scrollX + 1300) {
                     if (sp.type === 'alien') {
                         this.enemies.push({
                             type: 'alien',
@@ -1658,7 +1719,7 @@ const Game = {
     updateEnemiesStandard() {
         const size = this.cellSize;
         
-        this.enemies.forEach((enemy, idx) => {
+        this.enemies.forEach((enemy) => {
             if (enemy.isSquashed) return;
             
             if (enemy.type === 'piranha') {
@@ -1926,9 +1987,15 @@ const Game = {
      * Triggers victory.
      */
     levelVictory() {
-        this.gameState = 'victory';
+        if (this.gameState === 'victory' || this.gameState === 'victory_celebration') return;
+        this.gameState = 'victory_celebration';
+        this.celebrationTimer = 180;
         AudioEngine.stopMusic();
         AudioEngine.playSFX('victory');
+    },
+
+    showVictoryPopup() {
+        this.gameState = 'victory';
         
         // Add time to score (5 points per remaining second)
         const timeBonus = Math.max(0, Math.ceil(this.timeLeft / 60)) * 5;
@@ -1993,6 +2060,7 @@ const Game = {
                 if (char === 'S') drawSolidBlock(ctx, tx, ty, size, size);
                 else if (char === 'B') drawBrickBlock(ctx, tx, ty, size, size);
                 else if (char === '?') drawQuestionBlock(ctx, tx, ty, size, size, false);
+                else if (char === 'I') drawQuestionBlock(ctx, tx, ty, size, size, false);
                 else if (char === 'K') drawQuestionBlock(ctx, tx, ty, size, size, false);
                 else if (char === 'R') drawRedCrossHatchPlatform(ctx, tx, ty, size, size);
                 else if (char === 'P') drawGoldenPyramidBlock(ctx, tx, ty, size, size);
@@ -2034,6 +2102,8 @@ const Game = {
         this.powerups.forEach(key => {
             if (key.type === 'firepower') {
                 drawFirepowerItem(ctx, key.x, key.y, key.w, key.h);
+            } else if (key.type === 'diamond') {
+                drawInvincibilityDiamond(ctx, key.x, key.y, key.w, key.h);
             } else {
                 drawPowerupKey(ctx, key.x, key.y, key.w, key.h);
             }
