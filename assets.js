@@ -148,6 +148,62 @@ function drawSketchCircle(ctx, cx, cy, r, strokeColor, fillColor = null, width =
 }
 
 /**
+ * Draws a sketchy ellipse.
+ */
+function drawSketchEllipse(ctx, cx, cy, rx, ry, strokeColor, fillColor = null, width = 2, jitterAmt = SketchConfig.jitter) {
+    const timeIndex = getJitterTimeIndex();
+    
+    // Draw fill first
+    if (fillColor) {
+        ctx.fillStyle = fillColor;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, Math.max(0.1, rx * 0.9), Math.max(0.1, ry * 0.9), 0, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Marker hatches inside ellipse
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, Math.max(0.1, rx * 0.8), Math.max(0.1, ry * 0.8), 0, 0, Math.PI * 2);
+        ctx.clip();
+        
+        const spacing = 6;
+        const maxR = Math.max(rx, ry);
+        for (let i = -maxR * 2; i < maxR * 2; i += spacing) {
+            drawSketchLine(ctx, cx + i, cy - ry, cx + i + maxR * 2, cy + ry, fillColor, 1, jitterAmt * 0.5);
+        }
+        ctx.restore();
+    }
+    
+    // Draw strokes
+    if (strokeColor) {
+        for (let pass = 0; pass < 2; pass++) {
+            ctx.beginPath();
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = width;
+            
+            const segments = Math.max(8, Math.floor(Math.max(rx, ry) * 2));
+            for (let i = 0; i <= segments; i++) {
+                const angle = (i / segments) * Math.PI * 2;
+                const seed = (i * 88.5 + pass * 45.2 + timeIndex * 33.1);
+                const currRx = Math.max(0.1, rx + Math.sin(seed) * (jitterAmt * 0.6));
+                const currRy = Math.max(0.1, ry + Math.cos(seed * 0.8) * (jitterAmt * 0.6));
+                
+                const px = cx + Math.cos(angle) * currRx;
+                const py = cy + Math.sin(angle) * currRy;
+                
+                if (i === 0) {
+                    ctx.moveTo(px, py);
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.stroke();
+        }
+    }
+}
+
+
+/**
  * Draws a sketchy Bezier curve.
  */
 function drawSketchBezier(ctx, x1, y1, cx1, cy1, cx2, cy2, x2, y2, color, width = 2, jitterAmt = SketchConfig.jitter) {

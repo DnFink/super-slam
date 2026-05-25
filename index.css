@@ -793,8 +793,8 @@ kbd {
 /* Canvas Viewport */
 .canvas-container {
     position: relative;
-    width: 1200px;
-    height: 720px;
+    width: 100%;
+    max-width: 800px;
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
@@ -805,7 +805,8 @@ kbd {
 #game-canvas {
     display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
+    aspect-ratio: 800 / 480;
 }
 
 /* Overlays inside the viewport */

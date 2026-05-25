@@ -132,7 +132,7 @@ const Game = {
             "................................................PPPP........................................................................p.PPPP...............PPPPP....................PPPPP...................p...........................................................................................................HH................",
             ".................SSS....SSS....SSS......................................BB?BB..................SSS...............SSS........T.....BB?BB...................................................BB?BB...T...............SSSS........................................................................................HH................",
             "....1.......................................................................................................................t.....................................................................t..........................................................................................E.............HH......g.........",
-            ".......F......................................................................MMM..F........................................t.......................................................F.MMMO..R.....tF....O....R....F....O....R....F....R....O....F.........O....R....F....O....R....F....O.....................HH................",
+            ".......F......................................................................MMM..F........................................t.......................................................F.MMMO..R.....tF....O....R....F....O....R....F....R....O....F.........O....R....F....O....R....F....O.....................HH....MMMMMMM.....",
             "SSSSSSSSSSSSSSSLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSLLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSSSSSSLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSSSSSSLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
         ]
     },
@@ -552,14 +552,17 @@ const Game = {
                     // Fireball spawner block
                     this.spawners = this.spawners || [];
                     this.spawners.push({ col: c, row: r, timer: Math.random() * 60, type: 'fireball' });
+                    this.levelGrid[r][c] = '.';
                 } else if (char === 'A') {
                     // Alien falling spawner
                     this.spawners = this.spawners || [];
                     this.spawners.push({ col: c, row: r, timer: Math.random() * 60, type: 'alien' });
+                    this.levelGrid[r][c] = '.';
                 } else if (char === 'V') {
                     // Rocket Booster falling spawner
                     this.spawners = this.spawners || [];
                     this.spawners.push({ col: c, row: r, timer: Math.random() * 60, type: 'rocket' });
+                    this.levelGrid[r][c] = '.';
                 } else if (char === 'p') {
                     // Snapping chomper piranha plant
                     this.enemies.push({
@@ -1030,7 +1033,7 @@ const Game = {
                 const char = this.levelGrid[r][c];
                 
                 // Solid list
-                if (char === 'S' || char === 'B' || char === '?' || char === 'K' || char === 'R' || char === 'P' || char === 't' || char === 'T' || char === 'c' || char === '2' || char === '3' || char === '4' || char === '5' || char === 'H') {
+                if (this.isBlockSolid(char)) {
                     
                     // Simple overlapping bounds check
                     const bx = c * size;
@@ -1135,6 +1138,28 @@ const Game = {
             }
         }
     },
+
+    /**
+     * Central helper to check if a block character is solid.
+     */
+    isBlockSolid(char) {
+        return char === 'S' || 
+               char === 'B' || 
+               char === '?' || 
+               char === 'I' || 
+               char === 'K' || 
+               char === 'R' || 
+               char === 'P' || 
+               char === 't' || 
+               char === 'T' || 
+               char === 'c' || 
+               char === '2' || 
+               char === '3' || 
+               char === '4' || 
+               char === '5' || 
+               char === 'H';
+    },
+
 
     /**
      * Checks passive collectible item collisions (floating coins, escape ships, water).
@@ -1257,7 +1282,7 @@ const Game = {
             const er = Math.floor((enemy.y + enemy.h/2) / size);
             if (ec >= 0 && ec < this.levelWidth && er >= 0 && er < this.levelHeight) {
                 const nextB = this.levelGrid[er][ec];
-                if (nextB === 'S' || nextB === 'T' || nextB === 't' || nextB === 'c') {
+                if (this.isBlockSolid(nextB)) {
                     enemy.vx = -enemy.vx; // bounce patrol walk direction
                     enemy.facingRight = !enemy.facingRight;
                 }
@@ -1268,7 +1293,7 @@ const Game = {
             const erFoot = Math.floor((enemy.y + enemy.h) / size);
             const ecFoot = Math.floor((enemy.x + enemy.w/2) / size);
             if (erFoot < this.levelHeight && ecFoot < this.levelWidth) {
-                if (this.levelGrid[erFoot][ecFoot] === 'S') {
+                if (this.isBlockSolid(this.levelGrid[erFoot][ecFoot])) {
                     enemy.y = erFoot * size - enemy.h;
                     enemy.vy = 0;
                 }
@@ -1385,7 +1410,7 @@ const Game = {
             const row = Math.floor((key.y + key.h/2) / size);
             if (col >= 0 && col < this.levelWidth && row >= 0 && row < this.levelHeight) {
                 const b = this.levelGrid[row][col];
-                if (b === 'S' || b === 'T' || b === 't') {
+                if (this.isBlockSolid(b)) {
                     key.vx = -key.vx;
                 }
             }
@@ -1394,7 +1419,7 @@ const Game = {
             const footR = Math.floor((key.y + key.h) / size);
             const footC = Math.floor((key.x + key.w/2) / size);
             if (footR < this.levelHeight && footC < this.levelWidth) {
-                if (this.levelGrid[footR][footC] === 'S') {
+                if (this.isBlockSolid(this.levelGrid[footR][footC])) {
                     key.y = footR * size - key.h;
                     key.vy = 0;
                 }
@@ -1410,7 +1435,16 @@ const Game = {
                     p.hasFirepower = true;
                     AudioEngine.playSFX('powerup');
                     this.spawnBurstParticles(p.x + 12, p.y + 16, '#ff3d00', 25);
-                    alert("Firepower Core Collected! Press 'C' to shoot fireballs!");
+                    this.particles.push({
+                        x: p.x + p.w / 2,
+                        y: p.y - 15,
+                        vx: 0,
+                        vy: -0.6,
+                        color: '#ff9100',
+                        type: 'text',
+                        text: "FIREPOWER UNLOCKED! PRESS 'C'",
+                        life: 120
+                    });
                 } else if (key.type === 'diamond') {
                     p.isInvincible = true;
                     p.invincibilityTimer = 600; // 10 seconds of invincibility
@@ -1471,7 +1505,7 @@ const Game = {
                     this.spawnBurstParticles(col * size + size/2, row * size + size/2, '#757575', 15);
                     AudioEngine.playSFX('stomp');
                     destroy = true;
-                } else if (block === 'S' || block === 'T' || block === 't' || block === 'B' || block === 'P') {
+                } else if (this.isBlockSolid(block)) {
                     destroy = true;
                 }
             }
@@ -1578,7 +1612,7 @@ const Game = {
         const row = Math.floor((b.y + b.h/2) / size);
         if (col >= 0 && col < this.levelWidth && row >= 0 && row < this.levelHeight) {
             const block = this.levelGrid[row][col];
-            if (block === 'S' || block === 'T' || block === 't') {
+            if (this.isBlockSolid(block)) {
                 b.vx = -b.vx;
                 b.facingRight = !b.facingRight;
             }
@@ -1588,7 +1622,7 @@ const Game = {
         const erF = Math.floor((b.y + b.h) / size);
         const ecF = Math.floor((b.x + b.w/2) / size);
         if (erF < this.levelHeight && ecF < this.levelWidth) {
-            if (this.levelGrid[erF][ecF] === 'S') {
+            if (this.isBlockSolid(this.levelGrid[erF][ecF])) {
                 b.y = erF * size - b.h;
                 b.vy = 0;
             }
@@ -1775,7 +1809,7 @@ const Game = {
                 const ecFoot = Math.floor((enemy.x + enemy.w/2) / size);
                 if (erFoot < this.levelHeight && ecFoot >= 0 && ecFoot < this.levelWidth) {
                     const block = this.levelGrid[erFoot][ecFoot];
-                    if (block === 'S' || block === 'B' || block === '?' || block === 'T' || block === 't' || block === 'c' || block === 'H' || block === 'P' || block === 'R') {
+                    if (this.isBlockSolid(block)) {
                         // Explode into fire hazard
                         enemy.isSquashed = true;
                         this.spawnBurstParticles(enemy.x + enemy.w/2, enemy.y + enemy.h, '#ff5722', 20);
@@ -1802,7 +1836,7 @@ const Game = {
                 const ecFoot = Math.floor((enemy.x + enemy.w/2) / size);
                 if (erFoot < this.levelHeight && ecFoot >= 0 && ecFoot < this.levelWidth) {
                     const block = this.levelGrid[erFoot][ecFoot];
-                    if (block === 'S' || block === 'B' || block === '?' || block === 'T' || block === 't' || block === 'c' || block === 'H' || block === 'P' || block === 'R') {
+                    if (this.isBlockSolid(block)) {
                         enemy.y = erFoot * size - enemy.h;
                         enemy.vy = 0;
                         enemy.vx = -1.5; // Starts walking left
@@ -1823,7 +1857,7 @@ const Game = {
             const er = Math.floor((enemy.y + enemy.h/2) / size);
             if (ec >= 0 && ec < this.levelWidth && er >= 0 && er < this.levelHeight) {
                 const nextB = this.levelGrid[er][ec];
-                if (nextB === 'S' || nextB === 'T' || nextB === 't' || nextB === 'c' || nextB === 'B' || nextB === '?') {
+                if (this.isBlockSolid(nextB)) {
                     enemy.vx = -enemy.vx;
                     enemy.facingRight = !enemy.facingRight;
                 }
@@ -1834,7 +1868,7 @@ const Game = {
             const ecFoot = Math.floor((enemy.x + enemy.w/2) / size);
             if (erFoot < this.levelHeight && ecFoot >= 0 && ecFoot < this.levelWidth) {
                 const block = this.levelGrid[erFoot][ecFoot];
-                if (block === 'S' || block === 'B' || block === '?' || block === 'T' || block === 't' || block === 'c') {
+                if (this.isBlockSolid(block)) {
                     enemy.y = erFoot * size - enemy.h;
                     if (enemy.type === 'fireball') {
                         enemy.vy = -6.5; // bounce up
@@ -1879,7 +1913,11 @@ const Game = {
         this.particles.forEach((part, idx) => {
             part.x += part.vx;
             part.y += part.vy;
-            part.vy += 0.2; // light gravity falling
+            if (part.type === 'text') {
+                part.vy = -0.6; // slow floating upward
+            } else {
+                part.vy += 0.2; // light gravity falling
+            }
             part.life--;
             if (part.life <= 0) {
                 this.particles.splice(idx, 1);
@@ -2141,8 +2179,20 @@ const Game = {
         
         // 4. Draw particles
         this.particles.forEach(part => {
-            ctx.fillStyle = part.color;
-            ctx.fillRect(part.x, part.y, part.w, part.h);
+            if (part.type === 'text') {
+                ctx.save();
+                ctx.font = "bold 14px 'Fredoka', 'Outfit', sans-serif";
+                ctx.fillStyle = part.color;
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 3;
+                ctx.textAlign = 'center';
+                ctx.strokeText(part.text, part.x, part.y);
+                ctx.fillText(part.text, part.x, part.y);
+                ctx.restore();
+            } else {
+                ctx.fillStyle = part.color;
+                ctx.fillRect(part.x, part.y, part.w, part.h);
+            }
         });
         
         // 5. Draw playable Hero Character
