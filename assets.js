@@ -976,7 +976,7 @@ function drawFireball(ctx, x, y, w, h, animTimer = 0) {
     ctx.fill();
     ctx.lineWidth = 2;
     ctx.strokeStyle = '#ffaa00';
-    strokeJitter(ctx, timeIndex);
+    ctx.stroke();
 
     // Inner core
     ctx.beginPath();
@@ -1268,7 +1268,7 @@ function drawInvincibilityDiamond(ctx, x, y, w, h) {
     // Add sketchy outline
     ctx.strokeStyle = strokeColor;
     ctx.lineWidth = 2;
-    strokeJitter(ctx, getJitterTimeIndex());
+    ctx.stroke();
     
     // Draw little eyes
     drawSketchCircle(ctx, -3, 0, 1.5, "#000", "#000", 1, 0);

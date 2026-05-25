@@ -1700,7 +1700,11 @@ const Game = {
         this.spawners.forEach(sp => {
             sp.timer--;
             if (sp.timer <= 0) {
-                sp.timer = 150 + Math.random() * 100;
+                if (sp.type === 'fireball') {
+                    sp.timer = 300 + Math.random() * 150;
+                } else {
+                    sp.timer = 150 + Math.random() * 100;
+                }
                 // Only spawn if near camera
                 // Wake up if within 1300px ahead or 600px behind camera
                 const spX = sp.col * this.cellSize;
@@ -1736,7 +1740,7 @@ const Game = {
                             type: 'fireball',
                             x: spX,
                             y: sp.row * this.cellSize,
-                            vx: -3.5, // rolling left
+                            vx: -2.0, // rolling left
                             vy: 0,
                             w: 24,
                             h: 24,
