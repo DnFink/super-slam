@@ -22,6 +22,7 @@ dom.window.HTMLCanvasElement.prototype.getContext = function () {
         clearRect: () => {},
         fillRect: () => {},
         translate: () => {},
+        rotate: () => {},
         scale: () => {},
         save: () => {},
         restore: () => {},

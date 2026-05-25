@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super Owen - Hand-Drawn Retro Platformer</title>
+    <title>Super Slam - Hand-Drawn Retro Platformer</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,12 +19,18 @@
             <div class="cloud cloud-1"></div>
             <div class="cloud cloud-2"></div>
             <div class="cloud cloud-3"></div>
+            
+            <!-- Funny Space Elements -->
+            <div class="space-ufo"></div>
+            <div class="space-rocket"></div>
+            <div class="space-firework"></div>
+            <div class="space-firework space-firework-2" style="left: 65%; animation-delay: 4.5s;"></div>
         </div>
 
         <!-- 1. Main Menu Screen -->
         <div id="main-menu-screen" class="menu-screen active">
             <header class="game-header animate-bounce-gentle">
-                <h1 class="game-title">SUPER <span class="accent-text">OWEN</span></h1>
+                <h1 class="game-title">SUPER <span class="accent-text">SLAM</span></h1>
                 <p class="game-subtitle">A Hand-Drawn Platforming Adventure</p>
             </header>
 
@@ -58,7 +64,7 @@
             </div>
 
             <footer class="main-footer">
-                <p>Inspired by hand-drawn sketches • Created with ♥</p>
+                <p>Inspired by hand-drawn sketches • Created with ♥ • designed by OF and DF</p>
             </footer>
         </div>
 
@@ -74,7 +80,7 @@
                 <!-- Character 1: Cowboy -->
                 <div class="char-card glass-panel" data-character="cowboy">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-cowboy-canvas" width="140" height="140"></canvas>
+                        <canvas id="char-cowboy-canvas" width="80" height="80"></canvas>
                     </div>
                     <h3 class="char-name">Cowboy</h3>
                     <p class="char-desc">The wild west hero! Sporting a red shirt and brown hat.</p>
@@ -84,7 +90,7 @@
                 <!-- Character 2: Astronaut -->
                 <div class="char-card glass-panel" data-character="astronaut">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-astronaut-canvas" width="140" height="140"></canvas>
+                        <canvas id="char-astronaut-canvas" width="80" height="80"></canvas>
                     </div>
                     <h3 class="char-name">Astronaut</h3>
                     <p class="char-desc">Ready for space! Wearing a bulky spacesuit and bubble helmet.</p>
@@ -94,7 +100,7 @@
                 <!-- Character 3: Driver -->
                 <div class="char-card active glass-panel" data-character="driver">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-driver-canvas" width="140" height="140"></canvas>
+                        <canvas id="char-driver-canvas" width="80" height="80"></canvas>
                     </div>
                     <h3 class="char-name">Driver</h3>
                     <p class="char-desc">Speed demon! Rocking a red racing suit and a white helmet.</p>
@@ -104,7 +110,7 @@
                 <!-- Character 4: Princess -->
                 <div class="char-card glass-panel" data-character="princess">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-princess-canvas" width="140" height="140"></canvas>
+                        <canvas id="char-princess-canvas" width="80" height="80"></canvas>
                     </div>
                     <h3 class="char-name">Princess</h3>
                     <p class="char-desc">A magical fairy princess with a pink dress and a star wand!</p>
@@ -114,7 +120,7 @@
                 <!-- Character 5: Ninja -->
                 <div class="char-card glass-panel" data-character="ninja">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-ninja-canvas" width="140" height="140"></canvas>
+                        <canvas id="char-ninja-canvas" width="80" height="80"></canvas>
                     </div>
                     <h3 class="char-name">Ninja</h3>
                     <p class="char-desc">Swift and stealthy in a dark suit with a sharp katana.</p>
@@ -124,7 +130,7 @@
                 <!-- Character 6: Fox -->
                 <div class="char-card glass-panel" data-character="fox">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-fox-canvas" width="140" height="140"></canvas>
+                        <canvas id="char-fox-canvas" width="80" height="80"></canvas>
                     </div>
                     <h3 class="char-name">Fox</h3>
                     <p class="char-desc">A clever orange fox with a big bushy tail and pointy ears.</p>
@@ -134,19 +140,19 @@
                 <!-- Character 7: Gorilla -->
                 <div class="char-card glass-panel" data-character="gorilla">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-gorilla-canvas" width="140" height="140"></canvas>
+                        <canvas id="char-gorilla-canvas" width="80" height="80"></canvas>
                     </div>
                     <h3 class="char-name">Gorilla</h3>
                     <p class="char-desc">A powerful silverback gorilla with huge arms and a strong chest.</p>
                     <span class="badge badge-primary">Base Form</span>
                 </div>
 
-                <!-- Character 8: Super Owen -->
-                <div class="char-card glass-panel" data-character="superowen">
+                <!-- Character 8: Super Slam -->
+                <div class="char-card glass-panel" data-character="superslam">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-superowen-canvas" width="140" height="140"></canvas>
+                        <canvas id="char-superslam-canvas" width="80" height="80"></canvas>
                     </div>
-                    <h3 class="char-name">Super Owen</h3>
+                    <h3 class="char-name">Super Slam</h3>
                     <p class="char-desc">The original blue wind-up hero with a tiny spark!</p>
                     <span class="badge badge-primary">Base Form</span>
                 </div>
@@ -154,7 +160,7 @@
                 <!-- Character 9: Bomb -->
                 <div class="char-card glass-panel" data-character="bomb">
                     <div class="char-card-canvas-wrapper">
-                        <canvas id="char-bomb-canvas" width="140" height="140"></canvas>
+                        <canvas id="char-bomb-canvas" width="80" height="80"></canvas>
                     </div>
                     <h3 class="char-name">Enemy Bomb</h3>
                     <p class="char-desc">A grumpy green walking bomb enemy. Watch out!</p>
@@ -221,6 +227,7 @@
                         <li><span><kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd></span> Walk Left & Right</li>
                         <li><span><kbd>Space</kbd> / <kbd>W</kbd> / <kbd>↑</kbd> / <kbd>Z</kbd></span> Jump (Hold for higher jump)</li>
                         <li><span><kbd>↓</kbd> / <kbd>S</kbd></span> Warp Down Tubes / Pipes</li>
+                        <li><span><kbd>X</kbd></span> Special Mode (When Ready)</li>
                         <li><span><kbd>Esc</kbd> / <kbd>P</kbd></span> Pause Game</li>
                     </ul>
                 </div>
@@ -247,7 +254,7 @@
                         </div>
                         <div class="mechanic-item">
                             <i class="fa-solid fa-key"></i>
-                            <strong>Super Key Power-Up:</strong> Eat the Golden Key power-up to transform from tiny Owen into Super Owen!
+                            <strong>Super Key Power-Up:</strong> Eat the Golden Key power-up to transform from tiny Slam into Super Slam!
                         </div>
                     </div>
                 </div>
@@ -264,7 +271,11 @@
                 </div>
                 <div class="hud-item hud-character">
                     <span class="hud-label">HERO</span>
-                    <span id="hud-char-val" class="hud-value">Owen</span>
+                    <span id="hud-char-val" class="hud-value">Slam</span>
+                </div>
+                <div class="hud-item hud-lives">
+                    <i class="fa-solid fa-heart" style="color: #ff5252;"></i>
+                    <span id="hud-lives-val" class="hud-value">2</span>
                 </div>
                 <div class="hud-item hud-coins">
                     <i class="fa-solid fa-coins gold-coin-glow"></i>
@@ -322,7 +333,7 @@
                 <div id="gameover-overlay" class="overlay-panel">
                     <div class="glass-panel text-center">
                         <h2 class="accent-text text-large animate-flash">GAME OVER</h2>
-                        <p>Oh no, Owen got squashed!</p>
+                        <p>Oh no, Slam got squashed!</p>
                         <div class="overlay-buttons">
                             <button id="btn-retry-level" class="btn btn-primary">Try Again</button>
                             <button id="btn-gameover-exit" class="btn btn-danger">Exit to Menu</button>
@@ -334,7 +345,7 @@
                 <div id="victory-overlay" class="overlay-panel">
                     <div class="glass-panel text-center">
                         <h2 class="success-text text-large animate-bounce-gentle">LEVEL CLEAR!</h2>
-                        <p>Super Owen has completed the course!</p>
+                        <p>Super Slam has completed the course!</p>
                         <div class="victory-stats">
                             <div>Coins: <span id="victory-coins">0</span></div>
                             <div>Score: <span id="victory-score">0</span></div>
@@ -359,6 +370,7 @@
                 </div>
                 <div class="action-buttons">
                     <button id="vbtn-jump" class="vbtn vbtn-action">JUMP</button>
+                    <button id="vbtn-special" class="vbtn vbtn-action" style="margin-left: 10px; background-color: #ff5252;">SPECIAL</button>
                 </div>
             </div>
         </div>

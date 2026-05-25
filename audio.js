@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Super Owen - 8-Bit Web Audio Synthesizer Engine
+   Super Slam - 8-Bit Web Audio Synthesizer Engine
    ========================================================================== */
 
 const AudioEngine = {
@@ -54,10 +54,21 @@ const AudioEngine = {
     currentTheme: 1,
 
     setTheme(lvl) {
+        let newTheme = 1;
         if (lvl === 'custom') {
-            this.currentTheme = 4;
+            newTheme = 4;
+        } else if (lvl === 0 || lvl === 'menu') {
+            newTheme = 0;
         } else {
-            this.currentTheme = lvl > 0 && lvl <= 3 ? lvl : 1;
+            newTheme = lvl > 0 && lvl <= 3 ? lvl : 1;
+        }
+        
+        if (this.currentTheme !== newTheme) {
+            this.currentTheme = newTheme;
+            if (this.musicInterval) {
+                this.stopMusic();
+                this.startMusic();
+            }
         }
     },
 

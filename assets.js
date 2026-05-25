@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Super Owen - Dynamic Marker Sketch Asset Renderer
+   Super Slam - Dynamic Marker Sketch Asset Renderer
    ========================================================================== */
 
 // Global configuration for sketch drawing
@@ -190,9 +190,9 @@ function drawSketchBezier(ctx, x1, y1, cx1, cy1, cx2, cy2, x2, y2, color, width 
    ========================================================================== */
 
 /**
- * Draws the Main Hero "Owen" (Blue Wind-up Bomb)
+ * Draws the Main Hero "Slam" (Blue Wind-up Bomb)
  */
-function drawOwen(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
+function drawSlam(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
     ctx.save();
     
     // Scale & Translate to center the character in the bounds
@@ -284,7 +284,7 @@ function drawOwen(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight
 }
 
 /**
- * Draws Driver Owen (Red racing suit, white helmet)
+ * Draws Driver Slam (Red racing suit, white helmet)
  */
 function drawDriver(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
     ctx.save();
@@ -329,7 +329,7 @@ function drawDriver(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRig
 }
 
 /**
- * Draws Astronaut Owen (Red/white space suit, glass bubble)
+ * Draws Astronaut Slam (Red/white space suit, glass bubble)
  */
 function drawAstronaut(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
     ctx.save();
@@ -375,7 +375,7 @@ function drawAstronaut(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facing
 }
 
 /**
- * Draws Cowboy Owen (Red shirt, brown hat)
+ * Draws Cowboy Slam (Red shirt, brown hat)
  */
 function drawCowboy(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
     ctx.save();
@@ -474,7 +474,7 @@ function drawEagle(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRigh
 }
 
 /**
- * Draws Princess Owen (Pink dress, tiara, fairy wings)
+ * Draws Princess Slam (Pink dress, tiara, fairy wings)
  */
 function drawPrincess(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
     ctx.save();
@@ -537,7 +537,7 @@ function drawPrincess(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingR
 }
 
 /**
- * Draws Ninja Owen (Dark purple suit, mask, ponytail)
+ * Draws Ninja Slam (Dark purple suit, mask, ponytail)
  */
 function drawNinja(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
     ctx.save();
@@ -593,7 +593,7 @@ function drawNinja(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRigh
 }
 
 /**
- * Draws Fox Owen (Orange fur, bushy tail, big ears)
+ * Draws Fox Slam (Orange fur, bushy tail, big ears)
  */
 function drawFox(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
     ctx.save();
@@ -655,7 +655,7 @@ function drawFox(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight 
 }
 
 /**
- * Draws Gorilla Owen (Dark fur, big silver chest)
+ * Draws Gorilla Slam (Dark fur, big silver chest)
  */
 function drawGorilla(ctx, x, y, w, h, isWalking = false, walkFrame = 0, facingRight = true) {
     ctx.save();
@@ -961,7 +961,7 @@ function drawWalkingBomb(ctx, x, y, w, h, walkFrame = 0, facingRight = true) {
     // 3. Black fuse top
     drawSketchLine(ctx, 0, -10, 0, -15, "#222", 2, 0.6);
     
-    // 4. Main Body: Bomb (Green or Dark-Purple marker color to distinguish from hero Owen)
+    // 4. Main Body: Bomb (Green or Dark-Purple marker color to distinguish from hero Slam)
     drawSketchCircle(ctx, 0, 0, 11, "#1b5e20", "#388e3c", 2, SketchConfig.jitter);
     
     // 5. Angry white eyes with vertical pupils
@@ -1463,6 +1463,96 @@ function drawCanvasCloud(ctx, cx, cy, scale = 1.0) {
     
     // Flat bottom line
     drawSketchLine(ctx, -32, 8, 32, 8, "rgba(255,255,255,0.08)", 1.5, 0.8);
+    ctx.restore();
+}
+
+function drawSkateboard(ctx, x, y, w, h, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    
+    // Wooden board
+    drawSketchRect(ctx, -15, 12, 30, 4, "#ffb300", "#ffca28", 1.5, 0.5);
+    // Wheels
+    drawSketchCircle(ctx, -10, 18, 3, "#37474f", "#cfd8dc", 1.5, 0.5);
+    drawSketchCircle(ctx, 10, 18, 3, "#37474f", "#cfd8dc", 1.5, 0.5);
+    
+    ctx.restore();
+}
+
+function drawBombFire(ctx, x, y, w, h, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    
+    // Fire aura
+    const flicker = Math.random() * 4;
+    drawSketchCircle(ctx, 0, 0, 14 + flicker, "#ff3d00", "rgba(255, 87, 34, 0.5)", 2, 1.5);
+    drawSketchCircle(ctx, 0, 0, 10 + flicker, "#ffb300", "rgba(255, 193, 7, 0.7)", 2, 1.5);
+    
+    ctx.restore();
+}
+
+function drawSwordRider(ctx, x, y, w, h, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    
+    // Giant Katana blade
+    drawSketchRect(ctx, -18, 12, 36, 3, "#b0bec5", "#eceff1", 1.5, 0.5);
+    // Hilt / Handle
+    drawSketchRect(ctx, -22, 11, 4, 5, "#424242", "#212121", 1.5, 0.5);
+    // Tip
+    ctx.fillStyle = "#eceff1";
+    ctx.beginPath();
+    ctx.moveTo(18, 12);
+    ctx.lineTo(24, 13.5);
+    ctx.lineTo(18, 15);
+    ctx.fill();
+    drawSketchLine(ctx, 18, 12, 24, 13.5, "#b0bec5", 1.5, 0.5);
+    drawSketchLine(ctx, 24, 13.5, 18, 15, "#b0bec5", 1.5, 0.5);
+    
+    ctx.restore();
+}
+
+function drawSurfboard(ctx, x, y, w, h, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    
+    const bob = Math.sin(Date.now() / 150) * 3;
+    
+    // Surfboard
+    drawSketchBezier(ctx, -20, 15 + bob, 0, 10 + bob, 0, 10 + bob, 20, 15 + bob, "#00bcd4", 2, 0.5);
+    drawSketchBezier(ctx, 20, 15 + bob, 0, 20 + bob, 0, 20 + bob, -20, 15 + bob, "#00bcd4", 2, 0.5);
+    ctx.fillStyle = "#b2ebf2";
+    ctx.beginPath();
+    ctx.moveTo(-20, 15 + bob);
+    ctx.quadraticCurveTo(0, 10 + bob, 20, 15 + bob);
+    ctx.quadraticCurveTo(0, 20 + bob, -20, 15 + bob);
+    ctx.fill();
+    
+    // Center stripe
+    drawSketchLine(ctx, -18, 15 + bob, 18, 15 + bob, "#00838f", 2, 0.5);
+    
+    ctx.restore();
+}
+
+function drawRV(ctx, x, y, w, h, facingRight = true) {
+    ctx.save();
+    ctx.translate(x + w / 2, y + h / 2);
+    if (!facingRight) ctx.scale(-1, 1);
+    
+    // RV Body
+    drawSketchRect(ctx, -25, -5, 45, 25, "#757575", "#e0e0e0", 2, 0.8);
+    // RV Stripe
+    drawSketchRect(ctx, -25, 5, 45, 4, "#ff9800", "#ffb300", 1.5, 0.5);
+    // RV Door / Windows
+    drawSketchRect(ctx, -10, -1, 8, 10, "#424242", "#90caf9", 1.5, 0.5);
+    drawSketchRect(ctx, 5, -1, 10, 6, "#424242", "#90caf9", 1.5, 0.5);
+    // Wheels
+    drawSketchCircle(ctx, -15, 20, 6, "#212121", "#424242", 2, 0.5);
+    drawSketchCircle(ctx, 10, 20, 6, "#212121", "#424242", 2, 0.5);
     
     ctx.restore();
 }

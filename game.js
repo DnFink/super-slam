@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Super Owen - Core Game Engine & Physics Coordinator
+   Super Slam - Core Game Engine & Physics Coordinator
    ========================================================================== */
 
 const Game = {
@@ -146,19 +146,33 @@ const Game = {
         
         this.bindEvents();
         
-        // Draw cute floating Owen on the main menu
+        // Draw cute floating Slam on the main menu
         const menuCanvas = document.getElementById('menu-char-canvas');
         if (menuCanvas) {
             const mCtx = menuCanvas.getContext('2d');
             let frame = 0;
             setInterval(() => {
                 mCtx.clearRect(0, 0, 120, 120);
-                drawOwen(mCtx, 40, 40, 40, 40, true, frame++, true);
+                drawSlam(mCtx, 40, 40, 40, 40, true, frame++, true);
             }, 60);
         }
         
         // Character selector canvas preview drawers
         this.drawSelectorPreviews();
+
+        // Start menu music on first user interaction
+        const startMenuAudio = () => {
+            if (this.gameState === 'menu' && !AudioEngine.musicInterval) {
+                AudioEngine.setTheme(0);
+                AudioEngine.startMusic();
+            }
+            document.removeEventListener('click', startMenuAudio);
+            document.removeEventListener('keydown', startMenuAudio);
+            document.removeEventListener('touchstart', startMenuAudio);
+        };
+        document.addEventListener('click', startMenuAudio);
+        document.addEventListener('keydown', startMenuAudio);
+        document.addEventListener('touchstart', startMenuAudio);
     },
 
     /**
@@ -172,7 +186,7 @@ const Game = {
         const ninjaCanvas = document.getElementById('char-ninja-canvas');
         const foxCanvas = document.getElementById('char-fox-canvas');
         const gorillaCanvas = document.getElementById('char-gorilla-canvas');
-        const superowenCanvas = document.getElementById('char-superowen-canvas');
+        const superslamCanvas = document.getElementById('char-superslam-canvas');
         const bombCanvas = document.getElementById('char-bomb-canvas');
         
         if (cowboyCanvas && astronautCanvas && driverCanvas) {
@@ -183,7 +197,7 @@ const Game = {
             const nCtx = ninjaCanvas ? ninjaCanvas.getContext('2d') : null;
             const fCtx = foxCanvas ? foxCanvas.getContext('2d') : null;
             const gCtx = gorillaCanvas ? gorillaCanvas.getContext('2d') : null;
-            const soCtx = superowenCanvas ? superowenCanvas.getContext('2d') : null;
+            const soCtx = superslamCanvas ? superslamCanvas.getContext('2d') : null;
             const bCtx = bombCanvas ? bombCanvas.getContext('2d') : null;
             
             let frame = 0;
@@ -205,7 +219,7 @@ const Game = {
                 if (nCtx) drawNinja(nCtx, 40, 40, 60, 60, false, 0, true);
                 if (fCtx) drawFox(fCtx, 40, 40, 60, 60, false, 0, true);
                 if (gCtx) drawGorilla(gCtx, 40, 40, 60, 60, false, 0, true);
-                if (soCtx) drawOwen(soCtx, 40, 40, 60, 60, false, 0, true);
+                if (soCtx) drawSlam(soCtx, 40, 40, 60, 60, false, 0, true);
                 if (bCtx) drawWalkingBomb(bCtx, 40, 40, 60, 60, 0, true);
             }, 100);
         }
@@ -312,7 +326,8 @@ const Game = {
             { id: 'vbtn-right', key: 'ArrowRight' },
             { id: 'vbtn-up', key: 'ArrowUp' },
             { id: 'vbtn-down', key: 'ArrowDown' },
-            { id: 'vbtn-jump', key: ' ' }
+            { id: 'vbtn-jump', key: ' ' },
+            { id: 'vbtn-special', key: 'x' }
         ];
         
         touchMappings.forEach(mapping => {
@@ -346,8 +361,12 @@ const Game = {
         document.getElementById(id).classList.add('active');
         
         if (id === 'main-menu-screen') {
-            AudioEngine.stopMusic();
             this.gameState = 'menu';
+        }
+
+        if (id !== 'game-screen') {
+            AudioEngine.setTheme(0);
+            AudioEngine.startMusic();
         }
     },
 
@@ -411,6 +430,11 @@ const Game = {
         this.blocks = {};
         this.boss = null;
         
+        this.lives = 2;
+        if (document.getElementById('hud-lives-val')) {
+            document.getElementById('hud-lives-val').innerText = this.lives;
+        }
+        
         this.levelHeight = lines.length;
         this.levelWidth = lines[0].length;
         const size = this.cellSize;
@@ -427,6 +451,8 @@ const Game = {
                     // Player spawn position
                     this.player.x = c * this.cellSize;
                     this.player.y = r * this.cellSize;
+                    this.player.lastSafeX = this.player.x;
+                    this.player.lastSafeY = this.player.y;
                     this.levelGrid[r][c] = '.';
                 } else if (char === 'M') {
                     // Patrolling walking bomb
@@ -520,7 +546,7 @@ const Game = {
     restartCurrentLevel() {
         AudioEngine.playSFX('coin');
         if (this.isCustomLevel) {
-            const data = localStorage.getItem('super_owen_custom_level');
+            const data = localStorage.getItem('super_slam_custom_level');
             this.startCustomLevel(data);
         } else {
             this.startCampaignLevel(this.levelIndex);
@@ -740,6 +766,12 @@ const Game = {
         // 7. Limit game boundaries
         if (this.player.x < 0) this.player.x = 0;
         
+        // Prevent flying out the top of the screen
+        if (this.player.y < 0) {
+            this.player.y = 0;
+            if (this.player.vy < 0) this.player.vy = 0;
+        }
+        
         // Fell into bottom screen pit
         if (this.player.y > this.levelHeight * this.cellSize) {
             if (this.player.isSpecialMode) {
@@ -836,6 +868,10 @@ const Game = {
                                 p.y = by - p.h;
                                 p.vy = 0;
                                 p.isGrounded = true;
+                                if (char !== 'X' && char !== 'O' && char !== 'L' && char !== 'W') {
+                                    p.lastSafeX = p.x;
+                                    p.lastSafeY = p.y;
+                                }
                             } else if (p.vy < 0) {
                                 // Hit ceiling block from below!
                                 p.y = by + size;
@@ -893,13 +929,13 @@ const Game = {
         // Breakable normal brick blocks
         else if (char === 'B') {
             if (this.player.powerState === 'super') {
-                // Super Owen shatters the brick!
+                // Super Slam shatters the brick!
                 this.levelGrid[r][c] = '.';
                 AudioEngine.playSFX('stomp');
                 this.spawnBurstParticles(c * this.cellSize + 16, r * this.cellSize + 16, '#8d6e63', 12);
                 this.score += 50;
             } else {
-                // Small Owen just bumps it
+                // Small Slam just bumps it
                 AudioEngine.playSFX('hit');
             }
         }
@@ -1482,7 +1518,7 @@ const Game = {
        ========================================================================== */
 
     /**
-     * Hurting player: shrinks Super Owen, kills normal Owen.
+     * Hurting player: shrinks Super Slam, kills normal Slam.
      */
     playerHurt() {
         if (this.player.isSpecialMode) return;
@@ -1500,7 +1536,7 @@ const Game = {
             AudioEngine.playSFX('hurt');
             this.spawnBurstParticles(this.player.x + 12, this.player.y + 12, '#ff3d00', 15);
         } else {
-            // Dead small Owen
+            // Dead small Slam
             this.playerDie();
         }
     },
@@ -1509,6 +1545,33 @@ const Game = {
      * Instantly kills the hero.
      */
     playerDie() {
+        if (this.lives > 1) {
+            this.lives--;
+            if (document.getElementById('hud-lives-val')) {
+                document.getElementById('hud-lives-val').innerText = this.lives;
+            }
+            AudioEngine.playSFX('hurt');
+            
+            // Spawn splash explosion shards to mask transition
+            this.spawnBurstParticles(this.player.x + 12, this.player.y + 12, '#00b4ff', 35);
+            
+            // Reset to last safe position
+            this.player.x = this.player.lastSafeX || this.player.x;
+            this.player.y = this.player.lastSafeY || this.player.y;
+            this.player.vx = 0;
+            this.player.vy = 0;
+            
+            // Grant invincibility frames
+            this.player.isInvincible = true;
+            this.player.invincibilityTimer = 120; // 2 seconds
+            return;
+        }
+
+        this.lives--;
+        if (document.getElementById('hud-lives-val')) {
+            document.getElementById('hud-lives-val').innerText = this.lives;
+        }
+
         this.gameState = 'gameover';
         AudioEngine.stopMusic();
         AudioEngine.playSFX('hurt');
@@ -1536,9 +1599,9 @@ const Game = {
         document.getElementById('victory-overlay').style.display = 'flex';
         
         // Save high scores in localStorage
-        const high = localStorage.getItem('super_owen_highscore') || 0;
+        const high = localStorage.getItem('super_slam_highscore') || 0;
         if (this.score > high) {
-            localStorage.setItem('super_owen_highscore', this.score);
+            localStorage.setItem('super_slam_highscore', this.score);
         }
     },
 
@@ -1669,19 +1732,19 @@ const Game = {
                     if (p.isSpecialMode) drawCape(ctx, p.x, p.y, p.w, p.h, p.facingRight);
                 } else if (this.selectedHero === 'ninja') {
                     drawNinja(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
-                    if (p.isSpecialMode) drawCape(ctx, p.x, p.y, p.w, p.h, p.facingRight);
+                    if (p.isSpecialMode) drawSwordRider(ctx, p.x, p.y, p.w, p.h, p.facingRight);
                 } else if (this.selectedHero === 'fox') {
                     drawFox(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
-                    if (p.isSpecialMode) drawCape(ctx, p.x, p.y, p.w, p.h, p.facingRight);
+                    if (p.isSpecialMode) drawSkateboard(ctx, p.x, p.y, p.w, p.h, p.facingRight);
                 } else if (this.selectedHero === 'gorilla') {
                     drawGorilla(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
-                    if (p.isSpecialMode) drawCape(ctx, p.x, p.y, p.w, p.h, p.facingRight);
-                } else if (this.selectedHero === 'superowen') {
-                    drawOwen(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
-                    if (p.isSpecialMode) drawCape(ctx, p.x, p.y, p.w, p.h, p.facingRight);
+                    if (p.isSpecialMode) drawSurfboard(ctx, p.x, p.y, p.w, p.h, p.facingRight);
+                } else if (this.selectedHero === 'superslam' || this.selectedHero === 'superowen') {
+                    drawSlam(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
+                    if (p.isSpecialMode) drawRV(ctx, p.x, p.y, p.w, p.h, p.facingRight);
                 } else if (this.selectedHero === 'bomb') {
                     drawWalkingBomb(ctx, p.x, p.y, p.w, p.h, p.walkFrame, p.facingRight);
-                    if (p.isSpecialMode) drawCape(ctx, p.x, p.y, p.w, p.h, p.facingRight);
+                    if (p.isSpecialMode) drawBombFire(ctx, p.x, p.y, p.w, p.h, p.facingRight);
                 } else {
                     drawCowboy(ctx, p.x, p.y, p.w, p.h, isWalking, p.walkFrame, p.facingRight);
                     if (p.isSpecialMode) drawHorse(ctx, p.x, p.y, p.w, p.h, p.facingRight);

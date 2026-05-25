@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Super Owen CSS Stylesheet - Premium Retro-Modern Design System
+   Super Slam CSS Stylesheet - Premium Retro-Modern Design System
    ========================================================================== */
 
 /* Design Tokens & Theme Variables */
@@ -103,6 +103,61 @@ body, html {
 @keyframes floatCloudReverse {
     0% { right: -150px; }
     100% { right: 105%; }
+}
+
+.space-ufo {
+    position: absolute;
+    width: 80px;
+    height: 40px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40' viewBox='0 0 80 40'%3E%3Cpath d='M20,25 Q40,35 60,25 Q75,25 75,20 Q40,10 5,20 Q5,25 20,25 Z M25,20 Q40,-5 55,20' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat;
+    animation: flyUfo 22s ease-in-out infinite;
+    opacity: 0.6;
+}
+
+.space-rocket {
+    position: absolute;
+    width: 40px;
+    height: 100px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='100' viewBox='0 0 40 100'%3E%3Crect x='10' y='10' width='20' height='60' rx='5' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M10,70 L0,85 M30,70 L40,85 M15,70 L15,80 M25,70 L25,80' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M12,75 Q20,100 28,75' fill='none' stroke='%23ffb300' stroke-width='2'/%3E%3C/svg%3E") no-repeat;
+    animation: landRocket 16s ease-in infinite;
+    opacity: 0.8;
+}
+
+.space-firework {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30,15 L30,5 M30,45 L30,55 M15,30 L5,30 M45,30 L55,30 M20,20 L10,10 M40,40 L50,50 M20,40 L10,50 M40,20 L50,10' stroke='%2300b4ff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat;
+    animation: explodeFirework 9s ease-out infinite;
+    opacity: 0;
+}
+
+.space-firework-2 {
+    animation-delay: 4.5s;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30,15 L30,5 M30,45 L30,55 M15,30 L5,30 M45,30 L55,30 M20,20 L10,10 M40,40 L50,50 M20,40 L10,50 M40,20 L50,10' stroke='%23ff1744' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat;
+}
+
+@keyframes flyUfo {
+    0% { left: -100px; top: 15%; transform: rotate(10deg); }
+    25% { top: 25%; transform: rotate(-5deg); }
+    50% { top: 10%; transform: rotate(15deg); }
+    75% { top: 35%; transform: rotate(-10deg); }
+    100% { left: 110%; top: 20%; transform: rotate(5deg); }
+}
+
+@keyframes landRocket {
+    0% { top: -150px; left: 85%; transform: scale(1.2); opacity: 0; }
+    15% { opacity: 1; }
+    75% { top: 50%; left: 85%; transform: scale(0.9); opacity: 1; }
+    90% { top: 70%; left: 85%; transform: scale(0.8); opacity: 0; }
+    100% { top: 80%; left: 85%; opacity: 0; }
+}
+
+@keyframes explodeFirework {
+    0%, 60% { transform: scale(0.1); opacity: 0; top: 100%; left: 25%; }
+    65% { transform: scale(0.3); opacity: 1; top: 30%; left: 25%; }
+    75% { transform: scale(1.8); opacity: 0; top: 30%; left: 25%; }
+    100% { transform: scale(2); opacity: 0; }
 }
 
 /* Glassmorphism Panel Class */
@@ -380,24 +435,25 @@ body, html {
 /* Screen 2: Character Selector Screen */
 .character-grid {
     display: flex;
-    gap: 30px;
-    margin-bottom: 40px;
+    gap: 15px;
+    margin-bottom: 20px;
     width: 100%;
-    max-width: 800px;
+    max-width: 900px;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 .char-card {
     flex: 1;
-    min-width: 260px;
-    max-width: 320px;
+    min-width: 140px;
+    max-width: 180px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     cursor: pointer;
     border: 3px solid transparent;
+    padding: 15px;
 }
 
 .char-card.active {
@@ -409,8 +465,8 @@ body, html {
 .char-card-canvas-wrapper {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 50%;
-    padding: 10px;
-    margin-bottom: 15px;
+    padding: 5px;
+    margin-bottom: 10px;
     border: 2px dashed rgba(255,255,255,0.1);
 }
 
@@ -421,16 +477,16 @@ body, html {
 
 .char-name {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
-    margin-bottom: 8px;
+    font-size: 1.1rem;
+    margin-bottom: 4px;
 }
 
 .char-desc {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.7);
     line-height: 1.4;
-    margin-bottom: 15px;
-    height: 60px;
+    margin-bottom: 8px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -438,8 +494,8 @@ body, html {
 
 .badge {
     font-family: var(--font-heading);
-    font-size: 0.75rem;
-    padding: 4px 12px;
+    font-size: 0.65rem;
+    padding: 3px 8px;
     border-radius: 20px;
     text-transform: uppercase;
     font-weight: 600;
