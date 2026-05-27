@@ -861,25 +861,25 @@ function drawGoldenPyramidBlock(ctx, x, y, w, h) {
 }
 
 /* ==========================================================================
-   INTERACTIVE PIPES / TUBES
+   INTERACTIVE WARP VENTS / TUBES
    ========================================================================== */
 
 /**
- * Draws pipe top (lip/rim)
+ * Draws vent top (lip/rim)
  */
 function drawPipeTop(ctx, x, y, w, h) {
-    drawSketchRect(ctx, x, y, w, h, "#1b5e20", "#4caf50", 2.5, SketchConfig.jitter);
+    drawSketchRect(ctx, x, y, w, h, "#37474f", "#607d8b", 2.5, SketchConfig.jitter);
     // Draw shading highlight line (a sketchy white line on left)
-    drawSketchLine(ctx, x + 6, y + 2, x + 6, y + h - 2, "#a5d6a7", 2, 0.8);
+    drawSketchLine(ctx, x + 6, y + 2, x + 6, y + h - 2, "#b0bec5", 2, 0.8);
 }
 
 /**
- * Draws pipe body
+ * Draws vent body
  */
 function drawPipeBody(ctx, x, y, w, h) {
-    drawSketchRect(ctx, x, y, w, h, "#1b5e20", "#4caf50", 2.5, SketchConfig.jitter);
+    drawSketchRect(ctx, x, y, w, h, "#37474f", "#607d8b", 2.5, SketchConfig.jitter);
     // Draw shading highlight line
-    drawSketchLine(ctx, x + 8, y, x + 8, y + h, "#a5d6a7", 2.5, 0.8);
+    drawSketchLine(ctx, x + 8, y, x + 8, y + h, "#b0bec5", 2.5, 0.8);
 }
 
 /* ==========================================================================
@@ -887,7 +887,7 @@ function drawPipeBody(ctx, x, y, w, h) {
    ========================================================================== */
 
 /**
- * Draws a Trapping Plant / Piranha Chomper (Snapping jaws in green pot/pipe)
+ * Draws a Snapper Trap (Robotic Jaw in a Vent)
  */
 function drawPiranhaPlant(ctx, x, y, w, h, openRatio = 0.5) {
     ctx.save();
@@ -898,13 +898,13 @@ function drawPiranhaPlant(ctx, x, y, w, h, openRatio = 0.5) {
     
     const bob = Math.sin(Date.now() / 150) * 1.5;
     
-    // Stem
-    drawSketchRect(ctx, -3, 4 + bob, 6, 20, "#1b5e20", "#4caf50", 2, 0.8);
-    // Green leaves
-    drawSketchCircle(ctx, -8, 12 + bob, 4, "#1b5e20", "#4caf50", 1.5, 0.8);
-    drawSketchCircle(ctx, 8, 14 + bob, 4, "#1b5e20", "#4caf50", 1.5, 0.8);
+    // Stem -> Metal Rod
+    drawSketchRect(ctx, -3, 4 + bob, 6, 20, "#37474f", "#78909c", 2, 0.8);
+    // Gear joints instead of leaves
+    drawSketchCircle(ctx, -5, 12 + bob, 4, "#263238", "#546e7a", 1.5, 0.8);
+    drawSketchCircle(ctx, 5, 14 + bob, 4, "#263238", "#546e7a", 1.5, 0.8);
     
-    // Draw Snapping Red Bulb Head
+    // Draw Snapping Robotic Jaw Head
     ctx.save();
     ctx.translate(0, -10 + bob);
     
@@ -914,12 +914,12 @@ function drawPiranhaPlant(ctx, x, y, w, h, openRatio = 0.5) {
     // Top Jaw
     ctx.save();
     ctx.rotate(-jawAngle);
-    drawSketchCircle(ctx, 0, -5, 10, "#b71c1c", "#e53935", 2, 1);
-    // White polka spots
-    drawSketchCircle(ctx, -4, -8, 2.5, "rgba(0,0,0,0)", "#fff", 1, 0.5);
-    drawSketchCircle(ctx, 3, -6, 2, "rgba(0,0,0,0)", "#fff", 1, 0.5);
-    // White sharp triangular teeth
-    ctx.fillStyle = "#fff";
+    drawSketchCircle(ctx, 0, -5, 10, "#4a148c", "#7e57c2", 2, 1);
+    // Glowing neon spots
+    drawSketchCircle(ctx, -4, -8, 2.5, "rgba(0,0,0,0)", "#00e5ff", 1, 0.8);
+    drawSketchCircle(ctx, 3, -6, 2, "rgba(0,0,0,0)", "#00e5ff", 1, 0.8);
+    // Sharp metal teeth
+    ctx.fillStyle = "#cfd8dc";
     ctx.beginPath();
     ctx.moveTo(-7, 0); ctx.lineTo(-5, -4); ctx.lineTo(-3, 0);
     ctx.moveTo(-3, 0); ctx.lineTo(-1, -5); ctx.lineTo(1, 0);
@@ -930,11 +930,11 @@ function drawPiranhaPlant(ctx, x, y, w, h, openRatio = 0.5) {
     // Bottom Jaw
     ctx.save();
     ctx.rotate(jawAngle);
-    drawSketchCircle(ctx, 0, 5, 10, "#b71c1c", "#e53935", 2, 1);
-    // White spot
-    drawSketchCircle(ctx, -3, 8, 2, "rgba(0,0,0,0)", "#fff", 1, 0.5);
+    drawSketchCircle(ctx, 0, 5, 10, "#4a148c", "#7e57c2", 2, 1);
+    // Glowing neon spot
+    drawSketchCircle(ctx, -3, 8, 2, "rgba(0,0,0,0)", "#00e5ff", 1, 0.8);
     // Bottom teeth
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = "#cfd8dc";
     ctx.beginPath();
     ctx.moveTo(-6, 0); ctx.lineTo(-4, 4); ctx.lineTo(-2, 0);
     ctx.moveTo(-2, 0); ctx.lineTo(0, 5); ctx.lineTo(2, 0);
@@ -988,7 +988,7 @@ function drawFireball(ctx, x, y, w, h, animTimer = 0) {
 }
 
 /**
- * Draws a Walking Bomb Enemy (patrolling left/right)
+ * Draws a Rogue Drone Enemy (patrolling left/right)
  */
 function drawWalkingBomb(ctx, x, y, w, h, walkFrame = 0, facingRight = true) {
     ctx.save();
@@ -1001,49 +1001,31 @@ function drawWalkingBomb(ctx, x, y, w, h, walkFrame = 0, facingRight = true) {
     
     const timeIndex = getJitterTimeIndex();
     
-    // 1. Rotating key on the back
+    // 1. Antenna on the back instead of key
     ctx.save();
-    ctx.translate(-12, 0);
-    ctx.rotate((walkFrame * 20) * Math.PI / 180);
-    drawSketchRect(ctx, 0, -1.5, 8, 3, "#3e2723", "#d7ccc8", 1.2, 0.5);
-    drawSketchCircle(ctx, 8, -3, 4, "#3e2723", "#d7ccc8", 1.2, 0.5);
-    drawSketchCircle(ctx, 8, 3, 4, "#3e2723", "#d7ccc8", 1.2, 0.5);
+    ctx.translate(-10, 0);
+    drawSketchLine(ctx, 0, 0, -8, -8, "#37474f", 2, 0.5);
+    drawSketchCircle(ctx, -8, -8, 2, "#ff3d00", "#ff9100", 1.2, 0.8); // Antenna ball
     ctx.restore();
     
-    // 2. Yellow/Orange walking feet
-    let lY = 10, rY = 10;
-    if (walkFrame % 4 < 2) {
-        lY += 3; rY -= 3;
-    } else {
-        lY -= 3; rY += 3;
-    }
-    drawSketchCircle(ctx, -5, lY, 4, "#e65100", "#ffb74d", 1.2, 0.6);
-    drawSketchCircle(ctx, 5, rY, 4, "#e65100", "#ffb74d", 1.2, 0.6);
+    // 2. Tank treads instead of feet
+    let treadOffset = (walkFrame % 4) * 2;
+    drawSketchRect(ctx, -8, 8, 16, 6, "#212121", "#424242", 1.5, 0.5);
+    drawSketchCircle(ctx, -6 + treadOffset, 11, 1.5, "#000", "#757575", 1, 0.2);
+    drawSketchCircle(ctx, 0 + treadOffset, 11, 1.5, "#000", "#757575", 1, 0.2);
+    drawSketchCircle(ctx, 6 + treadOffset, 11, 1.5, "#000", "#757575", 1, 0.2);
     
-    // 3. Black fuse top
-    drawSketchLine(ctx, 0, -10, 0, -15, "#222", 2, 0.6);
+    // 3. Siren light instead of fuse
+    const isBlink = Math.floor(Date.now() / 200) % 2 === 0;
+    const sirenColor = isBlink ? "#ff1744" : "#b71c1c";
+    drawSketchRect(ctx, -3, -13, 6, 4, "#212121", sirenColor, 1.5, 0.5);
     
-    // 4. Main Body: Bomb (Green or Dark-Purple marker color to distinguish from hero Slam)
-    drawSketchCircle(ctx, 0, 0, 11, "#1b5e20", "#388e3c", 2, SketchConfig.jitter);
+    // 4. Main Body: Blue Metal Drone
+    drawSketchCircle(ctx, 0, 0, 11, "#1a237e", "#3f51b5", 2, SketchConfig.jitter);
     
-    // 5. Angry white eyes with vertical pupils
-    ctx.fillStyle = "#fff";
-    ctx.beginPath();
-    ctx.ellipse(-3, -3, 2.5, 4, 0.2, 0, Math.PI * 2);
-    ctx.ellipse(3, -3, 2.5, 4, -0.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-    
-    // Angry eyebrows
-    drawSketchLine(ctx, -6, -8, -1, -5, "#000", 2, 0.5);
-    drawSketchLine(ctx, 6, -8, 1, -5, "#000", 2, 0.5);
-    
-    // Small black pupils
-    ctx.fillStyle = "#000";
-    ctx.beginPath();
-    ctx.arc(-2.5, -3, 1, 0, Math.PI * 2);
-    ctx.arc(2.5, -3, 1, 0, Math.PI * 2);
-    ctx.fill();
+    // 5. Glowing red visor eye
+    drawSketchRect(ctx, -2, -4, 8, 4, "#000", "#ff1744", 1.5, 0.5);
+    drawSketchCircle(ctx, 2, -2, 1, "#fff", "#fff", 1, 0.8); // glare
     
     ctx.restore();
 }
@@ -1587,10 +1569,10 @@ function drawBombFire(ctx, x, y, w, h, facingRight = true) {
     ctx.translate(x + w / 2, y + h / 2);
     if (!facingRight) ctx.scale(-1, 1);
     
-    // Fire aura
+    // Energy Field aura
     const flicker = Math.random() * 4;
-    drawSketchCircle(ctx, 0, 0, 14 + flicker, "#ff3d00", "rgba(255, 87, 34, 0.5)", 2, 1.5);
-    drawSketchCircle(ctx, 0, 0, 10 + flicker, "#ffb300", "rgba(255, 193, 7, 0.7)", 2, 1.5);
+    drawSketchCircle(ctx, 0, 0, 14 + flicker, "#00e5ff", "rgba(0, 229, 255, 0.5)", 2, 1.5);
+    drawSketchCircle(ctx, 0, 0, 10 + flicker, "#2979ff", "rgba(41, 121, 255, 0.7)", 2, 1.5);
     
     ctx.restore();
 }
