@@ -85,11 +85,13 @@ const AudioEngine = {
     init() {
         if (!this.ctx) {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return false;
             this.ctx = new AudioCtx();
         }
         if (this.ctx.state === 'suspended') {
             this.ctx.resume();
         }
+        return true;
     },
 
     /**
@@ -97,7 +99,7 @@ const AudioEngine = {
      */
     playSFX(type) {
         if (this.isSoundMuted) return;
-        this.init();
+        if (!this.init()) return;
         
         const now = this.ctx.currentTime;
         
@@ -273,7 +275,7 @@ const AudioEngine = {
      * Start the repeating chiptune background music loop.
      */
     startMusic() {
-        this.init();
+        if (!this.init()) return;
         if (this.musicInterval) return;
         
         const theme = this.themes[this.currentTheme];

@@ -9,6 +9,19 @@ const Game = {
     // Core game state variables
     gameState: 'menu', // menu, character_select, playing, paused, gameover, victory
     selectedHero: 'driver', // cowboy, astronaut, driver
+    heroNames: {
+        cowboy: 'Cowboy',
+        astronaut: 'Astronaut',
+        driver: 'Driver',
+        princess: 'Princess',
+        ninja: 'Ninja',
+        fox: 'Fox',
+        gorilla: 'Gorilla',
+        superslam: 'Super Slam',
+        bomb: 'Rogue Drone',
+        superowen: 'Super Owen'
+    },
+    animFrameId: null,
     score: 0,
     coins: 0,
     levelIndex: 1,
@@ -31,10 +44,12 @@ const Game = {
         w: 24,
         h: 24,
         isGrounded: false,
+        coyoteTimer: 0,
         facingRight: true,
         isInvincible: false,
         invincibilityTimer: 0,
-        powerState: 'normal', // normal, super
+        hasStarPower: false,
+        powerState: 'normal', // normal, owl
         walkFrame: 0,
         isPipeTransition: false,
         pipeTransitionTimer: 0
@@ -283,6 +298,9 @@ const Game = {
     bindEvents() {
         // Keyboard inputs
         window.addEventListener('keydown', e => {
+            if (this.gameState === 'playing' && [' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+            }
             this.keys[e.key] = true;
             this.keys[e.code] = true;
             
@@ -328,6 +346,10 @@ const Game = {
                 cards.forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
                 this.selectedHero = card.getAttribute('data-character');
+                const hudChar = document.getElementById('hud-char-val');
+                if (hudChar) {
+                    hudChar.innerText = this.heroNames[this.selectedHero] || 'Hero';
+                }
             });
         });
 
@@ -335,11 +357,14 @@ const Game = {
             this.showScreen('main-menu-screen');
         });
 
-        // Start Level button actions
+        // Start Level button & card actions
         document.querySelectorAll('.level-card').forEach(card => {
+            const lvl = parseInt(card.getAttribute('data-level'));
+            card.addEventListener('click', () => {
+                this.startCampaignLevel(lvl);
+            });
             card.querySelector('.btn-start-level').addEventListener('click', e => {
                 e.stopPropagation();
-                const lvl = parseInt(card.getAttribute('data-level'));
                 this.startCampaignLevel(lvl);
             });
         });
@@ -350,6 +375,7 @@ const Game = {
 
         muteBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                btn.blur();
                 const isMuted = AudioEngine.toggleSound();
                 muteBtns.forEach(b => b.innerHTML = isMuted ? '<i class="fa-solid fa-volume-mute"></i>' : '<i class="fa-solid fa-volume-up"></i>');
                 AudioEngine.playSFX('coin');
@@ -358,6 +384,7 @@ const Game = {
 
         musicBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                btn.blur();
                 const isMuted = AudioEngine.toggleMusic();
                 musicBtns.forEach(b => b.innerHTML = isMuted ? '<i class="fa-solid fa-music-slash"></i>' : '<i class="fa-solid fa-music"></i>');
                 if (isMuted) AudioEngine.stopMusic();
@@ -366,7 +393,7 @@ const Game = {
         });
 
         // Game Over & Pause Overlays binders
-        document.getElementById('btn-game-pause').addEventListener('click', () => this.pauseGame());
+        document.getElementById('btn-game-pause').addEventListener('click', e => { e.currentTarget.blur(); this.pauseGame(); });
         document.getElementById('btn-resume-game').addEventListener('click', () => this.resumeGame());
         document.getElementById('btn-restart-level').addEventListener('click', () => this.restartCurrentLevel());
         document.getElementById('btn-pause-exit').addEventListener('click', () => this.exitToMenu());
@@ -374,7 +401,7 @@ const Game = {
         document.getElementById('btn-gameover-exit').addEventListener('click', () => this.exitToMenu());
         document.getElementById('btn-next-level').addEventListener('click', () => this.startNextLevel());
         document.getElementById('btn-victory-exit').addEventListener('click', () => this.exitToMenu());
-        document.getElementById('btn-game-exit').addEventListener('click', () => this.exitToMenu());
+        document.getElementById('btn-game-exit').addEventListener('click', e => { e.currentTarget.blur(); this.exitToMenu(); });
         document.getElementById('btn-submit-score').addEventListener('click', () => this.submitScore());
 
         // Responsive virtual D-pad clicks (bind touch to key inputs)
@@ -384,6 +411,7 @@ const Game = {
             { id: 'vbtn-up', key: 'ArrowUp' },
             { id: 'vbtn-down', key: 'ArrowDown' },
             { id: 'vbtn-jump', key: ' ' },
+            { id: 'vbtn-fire', key: 'c' },
             { id: 'vbtn-special', key: 'x' }
         ];
         
@@ -450,7 +478,7 @@ const Game = {
         AudioEngine.setTheme(lvl);
         this.coins = 0;
         this.score = 0;
-        this.timeLeft = 300 * 60; // 150 seconds
+        this.timeLeft = 300 * 60; // 300 seconds
         
         const lines = this.campaignLevels[lvl];
         this.loadLevelGrid(lines);
@@ -459,6 +487,10 @@ const Game = {
         this.startGameLoop();
         
         document.getElementById('hud-level-val').innerText = `${lvl}-1`;
+        const hudChar = document.getElementById('hud-char-val');
+        if (hudChar) {
+            hudChar.innerText = this.heroNames[this.selectedHero] || 'Hero';
+        }
     },
 
     /**
@@ -470,7 +502,7 @@ const Game = {
         AudioEngine.setTheme('custom');
         this.coins = 0;
         this.score = 0;
-        this.timeLeft = 300 * 60; // 150 seconds
+        this.timeLeft = 300 * 60; // 300 seconds
         
         const lines = dataString.split('\n');
         this.loadLevelGrid(lines);
@@ -479,6 +511,10 @@ const Game = {
         this.startGameLoop();
         
         document.getElementById('hud-level-val').innerText = `CUSTOM`;
+        const hudChar = document.getElementById('hud-char-val');
+        if (hudChar) {
+            hudChar.innerText = this.heroNames[this.selectedHero] || 'Hero';
+        }
     },
 
     /**
@@ -535,6 +571,7 @@ const Game = {
                         facingRight: false,
                         isSquashed: false
                     });
+                    this.levelGrid[r][c] = '.';
                 } else if (char === 'R') {
                     // Fast rolling bad guy
                     this.enemies.push({
@@ -548,6 +585,7 @@ const Game = {
                         rollAngle: 0,
                         isSquashed: false
                     });
+                    this.levelGrid[r][c] = '.';
                 } else if (char === 'F') {
                     // Fireball spawner block
                     this.spawners = this.spawners || [];
@@ -626,13 +664,21 @@ const Game = {
         this.player.vx = 0;
         this.player.vy = 0;
         this.player.isGrounded = false;
+        this.player.coyoteTimer = 0;
         this.player.isInvincible = false;
+        this.player.invincibilityTimer = 0;
+        this.player.hasStarPower = false;
+        this.player.isSpecialMode = false;
+        this.player.specialTimer = 0;
         this.player.isPipeTransition = false;
         this.player.powerState = 'normal';
         this.player.hasFirepower = false;
         this.player.owlTimer = 0;
         this.player.h = 24;
         this.player.w = 24;
+        
+        const vbtnFire = document.getElementById('vbtn-fire');
+        if (vbtnFire) vbtnFire.style.display = 'none';
         
         this.scrollX = 0;
         this.scrollY = 0;
@@ -667,14 +713,20 @@ const Game = {
      * Initiates requestAnimationFrame ticking.
      */
     startGameLoop() {
+        if (this.animFrameId) {
+            cancelAnimationFrame(this.animFrameId);
+            this.animFrameId = null;
+        }
         const loop = () => {
             if (this.gameState === 'playing' || this.gameState === 'victory_celebration') {
                 this.update();
                 this.draw();
-                requestAnimationFrame(loop);
+                this.animFrameId = requestAnimationFrame(loop);
+            } else {
+                this.animFrameId = null;
             }
         };
-        requestAnimationFrame(loop);
+        this.animFrameId = requestAnimationFrame(loop);
     },
 
     pauseGame() {
@@ -691,6 +743,11 @@ const Game = {
     },
 
     exitToMenu() {
+        if (this.animFrameId) {
+            cancelAnimationFrame(this.animFrameId);
+            this.animFrameId = null;
+        }
+        this.keys = {};
         this.showScreen('main-menu-screen');
     },
 
@@ -699,6 +756,24 @@ const Game = {
             this.startCampaignLevel(this.levelIndex + 1);
         } else {
             this.exitToMenu();
+        }
+    },
+
+    getStorage(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            this._memStorage = this._memStorage || {};
+            return this._memStorage[key] || null;
+        }
+    },
+
+    setStorage(key, val) {
+        try {
+            localStorage.setItem(key, val);
+        } catch (e) {
+            this._memStorage = this._memStorage || {};
+            this._memStorage[key] = String(val);
         }
     },
 
@@ -722,13 +797,13 @@ const Game = {
         }
 
         const lbKey = `super_slam_leaderboard_${this.levelIndex}`;
-        let scores = JSON.parse(localStorage.getItem(lbKey)) || [];
+        let scores = JSON.parse(this.getStorage(lbKey)) || [];
         scores.push({ name: name, score: this.score });
         
         scores.sort((a, b) => b.score - a.score);
         scores = scores.slice(0, 5); // Keep top 5
         
-        localStorage.setItem(lbKey, JSON.stringify(scores));
+        this.setStorage(lbKey, JSON.stringify(scores));
         
         document.getElementById('leaderboard-submission-form').style.display = 'none';
         document.getElementById('score-submitted-msg').style.display = 'block';
@@ -737,7 +812,7 @@ const Game = {
     renderLeaderboards() {
         for (let i = 1; i <= 3; i++) {
             const lbKey = `super_slam_leaderboard_${i}`;
-            const scores = JSON.parse(localStorage.getItem(lbKey)) || [];
+            const scores = JSON.parse(this.getStorage(lbKey)) || [];
             const listEl = document.getElementById(`leaderboard-list-${i}`);
             if (!listEl) continue;
             
@@ -748,7 +823,12 @@ const Game = {
                 scores.forEach((entry, idx) => {
                     const li = document.createElement('li');
                     if (idx < 3) li.classList.add(`rank-${idx + 1}`);
-                    li.innerHTML = `<span>${idx + 1}. ${entry.name}</span><span>${entry.score}</span>`;
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = `${idx + 1}. ${entry.name}`;
+                    const scoreSpan = document.createElement('span');
+                    scoreSpan.textContent = entry.score;
+                    li.appendChild(nameSpan);
+                    li.appendChild(scoreSpan);
                     listEl.appendChild(li);
                 });
             }
@@ -789,11 +869,11 @@ const Game = {
         if (this.timeLeft > 0 && !this.player.isDead) {
             this.timeLeft--;
             if (this.timeLeft <= 0) {
-                // Time up! Player dies instantly
+                // Time up! Player loses a life
                 if (!this.player.isSpecialMode) {
-                    this.playerHurt();
+                    this.playerDie();
                     this.timeLeft = 300 * 60;
-                } // Reset for next try
+                }
             }
         }
 
@@ -822,11 +902,11 @@ const Game = {
         }
         
         // 1. Invincibility flicker timer
-
         if (this.player.isInvincible) {
             this.player.invincibilityTimer--;
             if (this.player.invincibilityTimer <= 0) {
                 this.player.isInvincible = false;
+                this.player.hasStarPower = false;
             }
         }
         
@@ -897,15 +977,25 @@ const Game = {
             this.player.vy += 0.45; // gravity pull
         }
         
+        // Track Coyote Time for forgiving ledge jumps
+        if (this.player.isGrounded) {
+            this.player.coyoteTimer = 6;
+            this.player.doubleJumped = false;
+        } else if (this.player.coyoteTimer > 0) {
+            this.player.coyoteTimer--;
+        }
+
         // 4. Jump trigger
         const jumpPressed = (this.keys[' '] || this.keys['ArrowUp'] || this.keys['w'] || this.keys['W'] || this.keys['KeyZ']);
         const jumpPrev = (this.prevKeys[' '] || this.prevKeys['ArrowUp'] || this.prevKeys['w'] || this.prevKeys['W'] || this.prevKeys['KeyZ']);
         const jumpJustPressed = jumpPressed && !jumpPrev;
+        const jumpJustReleased = !jumpPressed && jumpPrev;
 
         if (jumpJustPressed && this.player.powerState !== 'owl') {
-            if (this.player.isGrounded) {
+            if (this.player.isGrounded || this.player.coyoteTimer > 0) {
                 this.player.vy = -9.6; // jump impulse
                 this.player.isGrounded = false;
+                this.player.coyoteTimer = 0;
                 this.player.doubleJumped = false;
                 AudioEngine.playSFX('jump');
             } else if (!this.player.doubleJumped) {
@@ -915,9 +1005,10 @@ const Game = {
                 this.spawnBurstParticles(this.player.x + this.player.w/2, this.player.y + this.player.h, '#fff', 8);
             }
         }
-        
-        if (this.player.isGrounded) {
-            this.player.doubleJumped = false;
+
+        // Variable jump height when releasing jump key early while ascending
+        if (jumpJustReleased && this.player.powerState !== 'owl' && this.player.vy < -4.0) {
+            this.player.vy *= 0.65;
         }
 
         // 5. Connect/Warp Pipe trigger! Stand on warp and press DOWN
@@ -945,7 +1036,9 @@ const Game = {
         this.resolveSolidCollisions('y');
         
         // 7. Limit game boundaries
+        const maxPlayerX = this.levelWidth * this.cellSize - this.player.w;
         if (this.player.x < 0) this.player.x = 0;
+        if (this.player.x > maxPlayerX) this.player.x = maxPlayerX;
         
         // Prevent flying out the top of the screen
         if (this.player.y < 0) {
@@ -955,7 +1048,7 @@ const Game = {
         
         // Fell into bottom screen pit
         if (this.player.y > this.levelHeight * this.cellSize) {
-            if (this.player.isSpecialMode) {
+            if (this.player.isSpecialMode || this.player.hasStarPower) {
                 this.player.vy = -18;
                 AudioEngine.playSFX('jump');
             } else {
@@ -1050,9 +1143,14 @@ const Game = {
                                 p.y = by - p.h;
                                 p.vy = 0;
                                 p.isGrounded = true;
-                                if (char !== 'X' && char !== 'O' && char !== 'L' && char !== 'W') {
-                                    p.lastSafeX = p.x;
-                                    p.lastSafeY = p.y;
+                                // Record safe respawn checkpoint only when center of player is over a safe solid ground tile
+                                const centerC = Math.floor((p.x + p.w / 2) / size);
+                                const groundChar = (centerC >= 0 && centerC < this.levelWidth) ? this.levelGrid[r][centerC] : '.';
+                                const aboveChar = (r > 0 && centerC >= 0 && centerC < this.levelWidth) ? this.levelGrid[r - 1][centerC] : '.';
+                                if ((groundChar === 'S' || groundChar === 'P' || groundChar === 'B') &&
+                                    aboveChar !== 'X' && aboveChar !== 'O' && aboveChar !== 'L' && aboveChar !== 'W') {
+                                    p.lastSafeX = centerC * size + (size - 24) / 2;
+                                    p.lastSafeY = r * size - 24;
                                 }
                             } else if (p.vy < 0) {
                                 // Hit ceiling block from below!
@@ -1126,14 +1224,14 @@ const Game = {
         }
         // Breakable normal brick blocks
         else if (char === 'B') {
-            if (this.player.powerState === 'super') {
-                // Super Slam shatters the brick!
+            if (this.player.powerState === 'owl' || this.player.isSpecialMode || this.player.hasStarPower) {
+                // Powered-up hero shatters the brick!
                 this.levelGrid[r][c] = '.';
                 AudioEngine.playSFX('stomp');
                 this.spawnBurstParticles(c * this.cellSize + 16, r * this.cellSize + 16, '#8d6e63', 12);
                 this.score += 50;
             } else {
-                // Small Slam just bumps it
+                // Base hero bumps it
                 AudioEngine.playSFX('hit');
             }
         }
@@ -1192,7 +1290,7 @@ const Game = {
                     const bx = c * size;
                     const by = r * size;
                     if (p.x < bx + size && p.x + p.w > bx && p.y + p.h > by + 8) {
-                        if (p.isSpecialMode) {
+                        if (p.isSpecialMode || p.hasStarPower) {
                             p.vy = -18;
                             AudioEngine.playSFX('jump');
                         } else {
@@ -1233,102 +1331,25 @@ const Game = {
        ========================================================================== */
 
     /**
-     * Updates walking bombs and snapping piranhas.
+     * Helper to unlock Firepower for the player and display the mobile fire button.
      */
-    updateEnemies() {
-        const size = this.cellSize;
-        
-        this.enemies.forEach((enemy) => {
-            if (enemy.isSquashed) return;
-            
-            // 1. Snapping Chomper plant logic
-            if (enemy.type === 'piranha') {
-                enemy.animTimer++;
-                
-                // Measure player distance
-                const dx = Math.abs(enemy.cx - (this.player.x + this.player.w/2));
-                
-                // Rise and descend logic
-                if (dx > 70) { // Only emerge if player is not standing right next to pipe!
-                    enemy.cy = enemy.baseY - 14 + Math.sin(enemy.animTimer * 0.05) * 16;
-                } else {
-                    enemy.cy = enemy.baseY + 20; // hide retracted in pipe
-                }
-                
-                // Touch damage check
-                const p = this.player;
-                const ex = enemy.cx - enemy.w/2;
-                const ey = enemy.cy - enemy.h/2;
-                if (p.x < ex + enemy.w && p.x + p.w > ex && p.y < ey + enemy.h && p.y + p.h > ey) {
-                    if (this.player.isSpecialMode) {
-                        this.spawnBurstParticles(ex + enemy.w/2, ey + enemy.h/2, '#f44336', 15);
-                        enemy.isSquashed = true;
-                        setTimeout(() => { this.enemies = this.enemies.filter(e => e !== enemy); }, 50);
-                        AudioEngine.playSFX('stomp');
-                        this.score += 200;
-                    } else {
-                        this.playerHurt();
-                    }
-                }
-                return;
-            }
-            
-            // 2. Standard Walking green/red bomb
-            enemy.vy += 0.4; // normal gravity
-            enemy.x += enemy.vx;
-            
-            // Simple X-wall collision check
-            const ec = Math.floor((enemy.x + (enemy.vx > 0 ? enemy.w : 0)) / size);
-            const er = Math.floor((enemy.y + enemy.h/2) / size);
-            if (ec >= 0 && ec < this.levelWidth && er >= 0 && er < this.levelHeight) {
-                const nextB = this.levelGrid[er][ec];
-                if (this.isBlockSolid(nextB)) {
-                    enemy.vx = -enemy.vx; // bounce patrol walk direction
-                    enemy.facingRight = !enemy.facingRight;
-                }
-            }
-            
-            // Apply Y-movement gravity check
-            enemy.y += enemy.vy;
-            const erFoot = Math.floor((enemy.y + enemy.h) / size);
-            const ecFoot = Math.floor((enemy.x + enemy.w/2) / size);
-            if (erFoot < this.levelHeight && ecFoot < this.levelWidth) {
-                if (this.isBlockSolid(this.levelGrid[erFoot][ecFoot])) {
-                    enemy.y = erFoot * size - enemy.h;
-                    enemy.vy = 0;
-                }
-            }
-            
-            enemy.walkFrame++;
-            
-            // Check stomp vs damage collision with player!
-            const p = this.player;
-            if (p.x < enemy.x + enemy.w && p.x + p.w > enemy.x && p.y < enemy.y + enemy.h && p.y + p.h > enemy.y) {
-                // Hitting from above = STOMP!
-                if (p.vy > 0 && p.y + p.h - p.vy <= enemy.y + 6) {
-                    enemy.isSquashed = true;
-                    p.vy = -6.0; // bounce player
-                    this.score += 200;
-                    AudioEngine.playSFX('stomp');
-                    this.spawnBurstParticles(enemy.x + 13, enemy.y + 13, '#4caf50', 10);
-                    
-                    // Delete enemy after squash frame
-                    setTimeout(() => {
-                        this.enemies = this.enemies.filter(e => e !== enemy);
-                    }, 100);
-                } else {
-                    // Hurting player
-                    if (this.player.isSpecialMode) {
-                        this.spawnBurstParticles(enemy.x + enemy.w/2, enemy.y + enemy.h/2, '#f44336', 15);
-                        enemy.isSquashed = true;
-                        setTimeout(() => { this.enemies = this.enemies.filter(e => e !== enemy); }, 50);
-                        AudioEngine.playSFX('stomp');
-                        this.score += 200;
-                    } else {
-                        this.playerHurt();
-                    }
-                }
-            }
+    unlockFirepower() {
+        const p = this.player;
+        if (p.hasFirepower) return;
+        p.hasFirepower = true;
+        const vbtnFire = document.getElementById('vbtn-fire');
+        if (vbtnFire) vbtnFire.style.display = 'flex';
+        AudioEngine.playSFX('powerup');
+        this.spawnBurstParticles(p.x + 12, p.y + 16, '#ff3d00', 25);
+        this.particles.push({
+            x: p.x + p.w / 2,
+            y: p.y - 15,
+            vx: 0,
+            vy: -0.6,
+            color: '#ff9100',
+            type: 'text',
+            text: "FIREPOWER UNLOCKED! PRESS 'C'",
+            life: 120
         });
     },
 
@@ -1363,7 +1384,8 @@ const Game = {
      * Updates flying bullet torpedoes.
      */
     updateBullets() {
-        this.bullets.forEach((bullet, idx) => {
+        for (let idx = this.bullets.length - 1; idx >= 0; idx--) {
+            const bullet = this.bullets[idx];
             bullet.x += bullet.vx;
             
             // Check stomp vs damage
@@ -1376,12 +1398,14 @@ const Game = {
                     AudioEngine.playSFX('stomp');
                     this.spawnBurstParticles(bullet.x + 12, bullet.y + 9, '#424242', 8);
                     this.bullets.splice(idx, 1);
+                    continue;
                 } else {
-                    if (this.player.isSpecialMode) {
+                    if (this.player.isSpecialMode || this.player.hasStarPower) {
                         this.spawnBurstParticles(bullet.x, bullet.y, '#f44336', 15);
                         this.bullets.splice(idx, 1);
                         AudioEngine.playSFX('stomp');
                         this.score += 200;
+                        continue;
                     } else {
                         this.playerHurt();
                     }
@@ -1392,7 +1416,7 @@ const Game = {
             if (bullet.x < this.scrollX - 100 || bullet.x > this.scrollX + 1300) {
                 this.bullets.splice(idx, 1);
             }
-        });
+        }
     },
 
     /**
@@ -1401,7 +1425,8 @@ const Game = {
     updatePowerups() {
         const size = this.cellSize;
         
-        this.powerups.forEach((key, idx) => {
+        for (let idx = this.powerups.length - 1; idx >= 0; idx--) {
+            const key = this.powerups[idx];
             key.vy += 0.35; // gravity
             key.x += key.vx;
             
@@ -1432,22 +1457,11 @@ const Game = {
                 this.score += 500;
                 
                 if (key.type === 'firepower') {
-                    p.hasFirepower = true;
-                    AudioEngine.playSFX('powerup');
-                    this.spawnBurstParticles(p.x + 12, p.y + 16, '#ff3d00', 25);
-                    this.particles.push({
-                        x: p.x + p.w / 2,
-                        y: p.y - 15,
-                        vx: 0,
-                        vy: -0.6,
-                        color: '#ff9100',
-                        type: 'text',
-                        text: "FIREPOWER UNLOCKED! PRESS 'C'",
-                        life: 120
-                    });
+                    this.unlockFirepower();
                 } else if (key.type === 'diamond') {
                     p.isInvincible = true;
-                    p.invincibilityTimer = 600; // 10 seconds of invincibility
+                    p.hasStarPower = true;
+                    p.invincibilityTimer = 600; // 10 seconds of star invincibility
                     AudioEngine.playSFX('powerup');
                     this.spawnBurstParticles(p.x + 12, p.y + 16, '#00e5ff', 30);
                 } else {
@@ -1458,6 +1472,8 @@ const Game = {
                         p.y -= 24; // push up so it doesn't clip floor
                         p.h = 48; // grow significantly
                         p.w = 48;
+                        this.resolveSolidCollisions('x');
+                        this.resolveSolidCollisions('y');
                         AudioEngine.playSFX('powerup');
                         this.spawnBurstParticles(p.x + 12, p.y + 16, '#fbc02d', 25);
                     } else {
@@ -1467,7 +1483,7 @@ const Game = {
                     }
                 }
             }
-        });
+        }
     },
 
     updatePlayerBullets() {
@@ -1489,7 +1505,8 @@ const Game = {
             AudioEngine.playSFX('jump'); // reuse sound for shooting
         }
 
-        this.playerBullets.forEach((bullet, idx) => {
+        for (let idx = this.playerBullets.length - 1; idx >= 0; idx--) {
+            const bullet = this.playerBullets[idx];
             bullet.x += bullet.vx;
             
             let destroy = false;
@@ -1519,6 +1536,7 @@ const Game = {
                         const ey = e.cy ? e.cy - e.h/2 : e.y;
                         if (bullet.x < ex + e.w && bullet.x + bullet.r * 2 > ex && bullet.y < ey + e.h && bullet.y + bullet.r * 2 > ey) {
                             e.isSquashed = true;
+                            this.score += 200;
                             this.spawnBurstParticles(ex + e.w/2, ey + e.h/2, '#ff5252', 15);
                             AudioEngine.playSFX('stomp');
                             setTimeout(() => { this.enemies = this.enemies.filter(en => en !== e); }, 50);
@@ -1543,7 +1561,8 @@ const Game = {
                             this.score += 2000;
                             AudioEngine.playSFX('victory');
                             this.spawnBurstParticles(b.x + 18, b.y + 18, '#ffd700', 40);
-                            // Drop firepower core
+                            this.unlockFirepower();
+                            // Also drop firepower core for bonus points
                             this.powerups.push({
                                 x: b.x + 4,
                                 y: b.y,
@@ -1566,25 +1585,28 @@ const Game = {
             if (destroy) {
                 this.playerBullets.splice(idx, 1);
             }
-        });
+        }
     },
 
     /**
      * Peanut Crown Spear Boss behaviors (movement, health hits, throwing spears).
      */
     updateSpears() {
-        this.spears.forEach((spear, idx) => {
+        for (let idx = this.spears.length - 1; idx >= 0; idx--) {
+            const spear = this.spears[idx];
             spear.x += spear.vx;
             
             // Spear hit player check
             const p = this.player;
             if (p.x < spear.x + spear.w && p.x + p.w > spear.x && p.y < spear.y + spear.h && p.y + p.h > spear.y) {
-                if (this.player.isSpecialMode) {
+                if (this.player.isSpecialMode || this.player.hasStarPower) {
                     this.spawnBurstParticles(spear.x, spear.y, '#f44336', 10);
                     this.spears.splice(idx, 1);
+                    continue;
                 } else {
                     this.playerHurt();
                     this.spears.splice(idx, 1);
+                    continue;
                 }
             }
             
@@ -1592,7 +1614,7 @@ const Game = {
             if (spear.x < this.scrollX - 50 || spear.x > this.scrollX + 1300) {
                 this.spears.splice(idx, 1);
             }
-        });
+        }
     },
 
     updateEnemiesSpearBoss() {
@@ -1662,7 +1684,8 @@ const Game = {
                     AudioEngine.playSFX('victory');
                     
                     this.spawnBurstParticles(b.x + 18, b.y + 18, '#ffd700', 40);
-                    // Drop Firepower core instead of spawning flag
+                    this.unlockFirepower();
+                    // Drop Firepower core for visual reward & bonus points
                     this.powerups.push({
                         x: b.x + 4,
                         y: b.y,
@@ -1674,12 +1697,28 @@ const Game = {
                     });
                 }
             } else if (b.hitInvincible === 0) {
-                if (this.player.isSpecialMode) {
+                if (this.player.isSpecialMode || this.player.hasStarPower) {
                     this.spawnBurstParticles(b.x + b.w/2, b.y + b.h/2, '#f44336', 25);
                     b.hp -= 2;
                     b.hitInvincible = 50;
                     AudioEngine.playSFX('stomp');
                     this.score += 500;
+                    if (b.hp <= 0) {
+                        b.isDead = true;
+                        this.score += 2000;
+                        AudioEngine.playSFX('victory');
+                        this.spawnBurstParticles(b.x + 18, b.y + 18, '#ffd700', 40);
+                        this.unlockFirepower();
+                        this.powerups.push({
+                            x: b.x + 4,
+                            y: b.y,
+                            vx: 0,
+                            vy: -4,
+                            w: 24,
+                            h: 24,
+                            type: 'firepower'
+                        });
+                    }
                 } else {
                     this.playerHurt();
                 }
@@ -1774,7 +1813,7 @@ const Game = {
                 const ex = enemy.cx - enemy.w/2;
                 const ey = enemy.cy - enemy.h/2;
                 if (p.x < ex + enemy.w && p.x + p.w > ex && p.y < ey + enemy.h && p.y + p.h > ey) {
-                    if (this.player.isSpecialMode) {
+                    if (this.player.isSpecialMode || this.player.hasStarPower) {
                         this.spawnBurstParticles(ex + enemy.w/2, ey + enemy.h/2, '#f44336', 15);
                         enemy.isSquashed = true;
                         setTimeout(() => { this.enemies = this.enemies.filter(e => e !== enemy); }, 50);
@@ -1806,7 +1845,16 @@ const Game = {
                 
                 const p = this.player;
                 if (p.x < enemy.x + enemy.w && p.x + p.w > enemy.x && p.y < enemy.y + enemy.h && p.y + p.h > enemy.y) {
-                    if (!this.player.isInvincible) this.playerHurt();
+                    if (this.player.isSpecialMode || this.player.hasStarPower) {
+                        enemy.isSquashed = true;
+                        this.spawnBurstParticles(enemy.x + enemy.w/2, enemy.y + enemy.h/2, '#ff5722', 20);
+                        AudioEngine.playSFX('stomp');
+                        this.score += 200;
+                        setTimeout(() => { this.enemies = this.enemies.filter(e => e !== enemy); }, 10);
+                        return;
+                    } else if (!this.player.isInvincible) {
+                        this.playerHurt();
+                    }
                 }
 
                 const erFoot = Math.floor((enemy.y + enemy.h) / size);
@@ -1849,7 +1897,15 @@ const Game = {
                 }
                 const p = this.player;
                 if (p.x < enemy.x + enemy.w && p.x + p.w > enemy.x && p.y < enemy.y + enemy.h && p.y + p.h > enemy.y) {
-                    if (!this.player.isInvincible) this.playerHurt();
+                    if (this.player.isSpecialMode || this.player.hasStarPower) {
+                        enemy.isSquashed = true;
+                        this.spawnBurstParticles(enemy.x + enemy.w/2, enemy.y + enemy.h/2, '#f44336', 15);
+                        AudioEngine.playSFX('stomp');
+                        this.score += 200;
+                        setTimeout(() => { this.enemies = this.enemies.filter(e => e !== enemy); }, 50);
+                    } else if (!this.player.isInvincible) {
+                        this.playerHurt();
+                    }
                 }
                 return;
             }
@@ -1896,7 +1952,7 @@ const Game = {
                         this.enemies = this.enemies.filter(e => e !== enemy);
                     }, 100);
                 } else {
-                    if (this.player.isSpecialMode) {
+                    if (this.player.isSpecialMode || this.player.hasStarPower) {
                         this.spawnBurstParticles(enemy.x + enemy.w/2, enemy.y + enemy.h/2, '#f44336', 15);
                         enemy.isSquashed = true;
                         setTimeout(() => { this.enemies = this.enemies.filter(e => e !== enemy); }, 50);
@@ -1914,7 +1970,8 @@ const Game = {
      * Spark shards particles.
      */
     updateParticles() {
-        this.particles.forEach((part, idx) => {
+        for (let idx = this.particles.length - 1; idx >= 0; idx--) {
+            const part = this.particles[idx];
             part.x += part.vx;
             part.y += part.vy;
             if (part.type === 'text') {
@@ -1926,7 +1983,7 @@ const Game = {
             if (part.life <= 0) {
                 this.particles.splice(idx, 1);
             }
-        });
+        }
     },
 
     spawnBurstParticles(x, y, color, count) {
@@ -1961,10 +2018,10 @@ const Game = {
        ========================================================================== */
 
     /**
-     * Hurting player: shrinks Super Slam, kills normal Slam.
+     * Hurting player: shrinks Owl back to normal, or costs a life.
      */
     playerHurt() {
-        if (this.player.isSpecialMode) return;
+        if (this.player.isSpecialMode || this.player.hasStarPower) return;
         if (this.player.isInvincible || this.gameState !== 'playing') return;
         
         if (this.player.powerState === 'owl') {
@@ -1985,9 +2042,10 @@ const Game = {
     },
 
     /**
-     * Instantly kills the hero.
+     * Instantly kills the hero or uses a checkpoint life.
      */
     playerDie() {
+        if (this.gameState !== 'playing') return;
         if (this.lives > 1) {
             this.lives--;
             if (document.getElementById('hud-lives-val')) {
@@ -1999,18 +2057,23 @@ const Game = {
             this.spawnBurstParticles(this.player.x + 12, this.player.y + 12, '#00b4ff', 35);
             
             // Reset to last safe position
-            this.player.x = this.player.lastSafeX || this.player.x;
-            this.player.y = this.player.lastSafeY || this.player.y;
+            this.player.powerState = 'normal';
+            this.player.owlTimer = 0;
+            this.player.w = 24;
+            this.player.h = 24;
+            this.player.x = (this.player.lastSafeX !== undefined) ? this.player.lastSafeX : this.player.x;
+            this.player.y = (this.player.lastSafeY !== undefined) ? this.player.lastSafeY : this.player.y;
             this.player.vx = 0;
             this.player.vy = 0;
             
             // Grant invincibility frames
             this.player.isInvincible = true;
+            this.player.hasStarPower = false;
             this.player.invincibilityTimer = 120; // 2 seconds
             return;
         }
 
-        this.lives--;
+        this.lives = 0;
         if (document.getElementById('hud-lives-val')) {
             document.getElementById('hud-lives-val').innerText = this.lives;
         }
@@ -2045,6 +2108,17 @@ const Game = {
         
         document.getElementById('victory-coins').innerText = this.coins;
         document.getElementById('victory-score').innerText = this.score;
+        const heroLabel = this.heroNames[this.selectedHero] || 'Super Slam';
+        const subtitleEl = document.getElementById('victory-subtitle');
+        if (subtitleEl) {
+            subtitleEl.innerText = (this.levelIndex >= 3 && !this.isCustomLevel)
+                ? `${heroLabel} has conquered the entire campaign!`
+                : `${heroLabel} has completed the course!`;
+        }
+        const nextBtn = document.getElementById('btn-next-level');
+        if (nextBtn) {
+            nextBtn.innerText = (this.levelIndex >= 3 || this.isCustomLevel) ? 'Finish Campaign' : 'Next Level';
+        }
         document.getElementById('victory-overlay').style.display = 'flex';
         
         if (!this.isCustomLevel) {
@@ -2057,9 +2131,9 @@ const Game = {
         }
         
         // Save high scores in localStorage
-        const high = localStorage.getItem('super_slam_highscore') || 0;
+        const high = this.getStorage('super_slam_highscore') || 0;
         if (this.score > high) {
-            localStorage.setItem('super_slam_highscore', this.score);
+            this.setStorage('super_slam_highscore', this.score);
         }
     },
 

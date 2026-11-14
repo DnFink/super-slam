@@ -162,7 +162,7 @@
 
                 <!-- Character 9: Rogue Drone -->
                 <div class="char-card glass-panel" data-character="bomb">
-                    <div class="char-canvas-container">
+                    <div class="char-card-canvas-wrapper">
                         <canvas id="char-bomb-canvas" width="140" height="140"></canvas>
                     </div>
                     <h3 class="char-name">Rogue Drone</h3>
@@ -234,7 +234,7 @@
                     <div class="level-badge">Level 3</div>
                     <div class="level-details">
                         <h3 class="level-name">The Boss Pyramid</h3>
-                        <p class="level-description">Cross the bridge over poison, climb the golden pyramid, defeat the Spear Boss, and escape on the lava ship!</p>
+                        <p class="level-description">Cross the bridge over lava, climb the golden pyramid, defeat the Spear Boss, and escape on the goal boat!</p>
                         <div class="level-leaderboard">
                             <h4><i class="fa-solid fa-trophy"></i> Top Scores</h4>
                             <ul id="leaderboard-list-3" class="leaderboard-list">
@@ -261,9 +261,9 @@
                     <ul class="controls-list">
                         <li><span><kbd>←</kbd> / <kbd>A</kbd></span> Move Left</li>
                         <li><span><kbd>→</kbd> / <kbd>D</kbd></span> Move Right</li>
-                        <li><span><kbd>↑</kbd> / <kbd>W</kbd></span> Jump</li>
-                        <li><span><kbd>↓</kbd> / <kbd>S</kbd></span> Warp Down Vents</li>
-                        <li><span><kbd>X</kbd></span> Special Mode (When Ready)</li>
+                        <li><span><kbd>↑</kbd> / <kbd>W</kbd> / <kbd>Space</kbd></span> Jump & Double Jump</li>
+                        <li><span><kbd>↓</kbd> / <kbd>S</kbd></span> Warp Down Vents / Fly Down</li>
+                        <li><span><kbd>X</kbd> / <kbd>Shift</kbd></span> Special Mode (Once Per Level)</li>
                         <li><span><kbd>C</kbd></span> Shoot Fireballs (When Powered Up)</li>
                         <li><span><kbd>Esc</kbd> / <kbd>P</kbd></span> Pause Game</li>
                     </ul>
@@ -271,27 +271,27 @@
 
                 <div class="how-to-section">
                     <h3><i class="fa-solid fa-gamepad"></i> Mobile Controls</h3>
-                    <p>On mobile or tablet devices, use the responsive virtual joystick and D-pad on the screen!</p>
+                    <p>On mobile or tablet devices, use the responsive on-screen D-pad and action buttons (Jump, Fire, and Special)!</p>
                 </div>
 
                 <div class="how-to-section">
                     <h3><i class="fa-solid fa-star"></i> Interactive Mechanics</h3>
                     <div class="mechanics-grid">
                         <div class="mechanic-item">
-                            <i class="fa-solid fa-shield-halved"></i>
-                            <strong>Warp Vents:</strong> Press <kbd>↓</kbd> on an industrial vent to warp between connected parts of a level!
+                            <i class="fa-solid fa-feather-pointed"></i>
+                            <strong>Owl Power-Up & Diamonds:</strong> Collect the Golden Egg to fly as a giant Owl and smash bricks, or find the hidden Invincibility Diamond!
                         </div>
                         <div class="mechanic-item">
-                            <i class="fa-solid fa-robot"></i>
-                            <strong>Rogue Drones:</strong> Watch out for robotic drone enemies. Stomp them or let them drive into hazards!
+                            <i class="fa-solid fa-bolt"></i>
+                            <strong>Hero Special Mode:</strong> Press <kbd>X</kbd> once per level to summon your hero's signature vehicle or power for 10 seconds of invincibility!
                         </div>
                         <div class="mechanic-item">
-                            <i class="fa-solid fa-coins"></i>
-                            <strong>Popping Coins:</strong> Smash yellow question blocks from underneath to release golden spinning coins.
+                            <i class="fa-solid fa-fire"></i>
+                            <strong>Boss Firepower:</strong> Stomp the Spear Boss 3 times to unlock Fireballs (<kbd>C</kbd>) and blast through castle walls!
                         </div>
                         <div class="mechanic-item">
-                            <i class="fa-solid fa-key"></i>
-                            <strong>Super Key Power-Up:</strong> Eat the Golden Key power-up to transform from tiny Slam into Super Slam!
+                            <i class="fa-solid fa-heart"></i>
+                            <strong>Two-Life Checkpoints:</strong> You start each level with 2 lives. Losing your first life respawns you at your last safe ground spot!
                         </div>
                     </div>
                 </div>
@@ -301,7 +301,7 @@
                     <ul class="controls-list">
                         <li><span>Coins</span> +100 Points each (The best way to score high!)</li>
                         <li><span>Time Bonus</span> +5 Points for every second left on the clock when finishing a level.</li>
-                        <li><span>Stomping Enemies</span> +200 Points</li>
+                        <li><span>Stomping Enemies</span> +200 Points (+2000 for Bosses!)</li>
                     </ul>
                 </div>
             </div>
@@ -317,7 +317,7 @@
                 </div>
                 <div class="hud-item hud-character">
                     <span class="hud-label">HERO</span>
-                    <span id="hud-char-val" class="hud-value">Slam</span>
+                    <span id="hud-char-val" class="hud-value">Driver</span>
                 </div>
                 <div class="hud-item hud-lives">
                     <i class="fa-solid fa-heart" style="color: #ff5252;"></i>
@@ -333,7 +333,7 @@
                 </div>
                 <div class="hud-item hud-time">
                     <span class="hud-label">TIME</span>
-                    <span id="hud-time-val" class="hud-value">150</span>
+                    <span id="hud-time-val" class="hud-value">300</span>
                 </div>
                 <div class="hud-item hud-owl-time" id="hud-owl-container" style="display: none;">
                     <span class="hud-label" style="color: #cfd8dc;">OWL FLIGHT</span>
@@ -379,7 +379,7 @@
                 <div id="gameover-overlay" class="overlay-panel">
                     <div class="glass-panel text-center">
                         <h2 class="accent-text text-large animate-flash">GAME OVER</h2>
-                        <p>Oh no, Slam got squashed!</p>
+                        <p>Oh no, your hero got squashed!</p>
                         <div class="overlay-buttons">
                             <button id="btn-retry-level" class="btn btn-primary">Try Again</button>
                             <button id="btn-gameover-exit" class="btn btn-danger">Exit to Menu</button>
@@ -391,7 +391,7 @@
                 <div id="victory-overlay" class="overlay-panel">
                     <div class="glass-panel text-center">
                         <h2 class="success-text text-large animate-bounce-gentle">LEVEL CLEAR!</h2>
-                        <p>Super Slam has completed the course!</p>
+                        <p id="victory-subtitle">Super Slam has completed the course!</p>
                         <div class="victory-stats">
                             <div>Coins: <span id="victory-coins">0</span></div>
                             <div>Score: <span id="victory-score">0</span></div>
@@ -420,11 +420,13 @@
                     <button id="vbtn-right" class="vbtn"><i class="fa-solid fa-arrow-right"></i></button>
                 </div>
                 <div class="action-buttons">
+                    <button id="vbtn-fire" class="vbtn vbtn-action" style="margin-right: 10px; background: linear-gradient(135deg, #00b4ff 0%, #007bb4 100%); border-color: #00d2ff; display: none;">FIRE</button>
                     <button id="vbtn-jump" class="vbtn vbtn-action">JUMP</button>
-                    <button id="vbtn-special" class="vbtn vbtn-action" style="margin-left: 10px; background-color: #ff5252;">SPECIAL</button>
+                    <button id="vbtn-special" class="vbtn vbtn-action" style="margin-left: 10px; background: linear-gradient(135deg, #ff1744 0%, #b30022 100%); border-color: #ff6b8b;">SPECIAL</button>
                 </div>
             </div>
         </div>
+    </div>
 
     <!-- Core Game and Engine Modules -->
     <script src="audio.js"></script>

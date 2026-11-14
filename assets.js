@@ -1153,15 +1153,6 @@ function drawSawBlade(ctx, x, y, w, h, spinFrame = 0) {
     ctx.restore();
 }
 
-/**
- * Draws a Fire Bar / fireball element
- */
-function drawFireball(ctx, x, y, r) {
-    // Red outer glow, orange center, yellow core
-    drawSketchCircle(ctx, x, y, r, "#d84315", "#ff8a65", 1.5, 1);
-    drawSketchCircle(ctx, x, y, r - 3, "#e65100", "#ffb74d", 1, 0.8);
-    drawSketchCircle(ctx, x, y, r - 6, "rgba(0,0,0,0)", "#ffd54f", 1, 0.5);
-}
 
 /**
  * Draws a Golden Coin (popping out or floating in levels)
